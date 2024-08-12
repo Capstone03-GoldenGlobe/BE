@@ -30,6 +30,7 @@ public class ListItem {
     @Column(name="item")
     private String item;
 
-    @ColumnDefault("false")
-    private boolean check;
+    @ColumnDefault("0") // False
+    @Column(name = "is_checked", nullable = false)
+    private boolean isChecked;
 }
