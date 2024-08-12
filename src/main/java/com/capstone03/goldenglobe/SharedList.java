@@ -11,15 +11,15 @@ import lombok.Setter;
 public class SharedList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="shared_id")
+    @Column(name="shared_id",nullable = false)
     private Long sharedId;
 
     @ManyToOne
-    @JoinColumn(name="list_id")
+    @JoinColumn(name="list_id",nullable = false)
     private CheckList list;
 
-    @ManyToMany
-    @JoinColumn(name="user_id")
+    @ManyToOne
+    @JoinColumn(name="user_id",nullable = false)
     private User user;
 
     @Column(name="user_color")

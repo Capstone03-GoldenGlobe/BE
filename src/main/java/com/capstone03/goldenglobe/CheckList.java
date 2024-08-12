@@ -14,12 +14,12 @@ public class CheckList {
     @Column(name="list_id",nullable = false)
     private Long listId;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name="user_id",nullable = false)
     private User user;
 
     @OneToOne
-    @JoinColumn(name="dest_id",nullable = false)
+    @JoinColumn(name="dest_id",nullable = false, unique = true)
     private TravelList dest;
 
 }

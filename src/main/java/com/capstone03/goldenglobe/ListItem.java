@@ -16,15 +16,15 @@ public class ListItem {
     private Long itemId;
 
     @ManyToOne
-    @JoinColumn(name="list_id")
+    @JoinColumn(name="list_id",nullable = false)
     private CheckList list;
 
     @ManyToOne
-    @JoinColumn(name="group_id")
+    @JoinColumn(name="group_id",nullable = false)
     private ListGroup group;
 
-    @ManyToMany
-    @JoinColumn(name="user_id")
+    @ManyToOne
+    @JoinColumn(name="user_id",nullable = false)
     private User user;
 
     @Column(name="item")
