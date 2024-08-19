@@ -13,8 +13,6 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class CheckListController {
-
-    private final CheckListRepository checkListRepository;
     private final CheckListService checkListService;
 
     @PostMapping("/checklists")

@@ -17,7 +17,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ListGroupController {
 
-    private final ListGroupRepository listGroupRepository;
     private final ListGroupService listGroupService;
 
     @PostMapping("/checklists/{list_id}/groups")

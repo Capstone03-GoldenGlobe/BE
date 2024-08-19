@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class CheckListService {
     private final CheckListRepository checkListRepository;
     private final TravelListRepository travelListRepository;
-
     private final UserRepository userRepository;
 
     public String makeCheckList(Long destId){
