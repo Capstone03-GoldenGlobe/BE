@@ -3,6 +3,7 @@ package com.capstone03.goldenglobe.checklist;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -12,8 +13,6 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class CheckListController {
-
-    private final CheckListRepository checkListRepository;
     private final CheckListService checkListService;
 
     @PostMapping("/checklists")
@@ -25,4 +24,7 @@ public class CheckListController {
         response.put("list_id", listId);
         return ResponseEntity.ok(response);
     }
+
+    //@GetMapping("/checklists/{dest_id}")
+
 }

@@ -16,8 +16,8 @@ public class GroupMemo {
     private Long memoId;
 
     @OneToOne
-    @JoinColumn(name="group_id",nullable = false)
-    private ListGroup group;
+    @JoinColumn(name="group_id",nullable = false,unique = true)
+    private ListGroup group; // unique
 
     @Column(name="memo")
     private String memo;
