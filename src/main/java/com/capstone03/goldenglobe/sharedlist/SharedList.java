@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="SharedList")
+@Table
 @Getter
 @Setter
 public class SharedList {

@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Table(name="ListItem")
+@Table
 @Getter
 @Setter
 public class ListItem {

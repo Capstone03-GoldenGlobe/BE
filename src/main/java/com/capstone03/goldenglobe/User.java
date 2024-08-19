@@ -1,15 +1,15 @@
 package com.capstone03.goldenglobe;
+import com.capstone03.goldenglobe.travellist.TravelList;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Entity
 @Table
 public class User {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id", nullable = false, length = 20)
   private String userId;
 

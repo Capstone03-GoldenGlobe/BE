@@ -1,12 +1,16 @@
-package com.capstone03.goldenglobe;
+package com.capstone03.goldenglobe.travellist;
 
+import com.capstone03.goldenglobe.User;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="TravelList")
+@Table
 public class TravelList {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "dest_id", nullable = false, length = 20)
   private String destId;
 
@@ -21,10 +25,10 @@ public class TravelList {
   private String city;
 
   @Column(name = "start_date")
-  private LocalDateTime startDate;
+  private LocalDate startDate;
 
   @Column(name = "end_date")
-  private LocalDateTime endDate;
+  private LocalDate endDate;
 
   @Column(name = "barrier_free")
   private Boolean barrierFree;

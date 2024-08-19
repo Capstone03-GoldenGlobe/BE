@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class ChatBotLog {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "log_id", nullable = false, length = 50)
   private String logId;
 
