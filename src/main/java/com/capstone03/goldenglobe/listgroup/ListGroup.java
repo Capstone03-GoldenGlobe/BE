@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name="ListGroup")
+@Table
 @Getter
 @Setter
 public class ListGroup {

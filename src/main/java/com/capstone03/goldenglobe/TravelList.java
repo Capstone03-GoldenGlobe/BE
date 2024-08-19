@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="TravelList")
+@Table
 public class TravelList {
   @Id
   @Column(name = "dest_id", nullable = false, length = 20)
