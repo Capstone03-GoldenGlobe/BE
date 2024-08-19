@@ -1,5 +1,6 @@
-package com.capstone03.goldenglobe;
+package com.capstone03.goldenglobe.groupmemo;
 
+import com.capstone03.goldenglobe.listgroup.ListGroup;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
