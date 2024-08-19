@@ -27,7 +27,7 @@ public class ListItem {
     private ListGroup group;
 
     @ManyToOne
-    @JoinColumn(name="user_id",nullable = false)
+    @JoinColumn(name="user_id") // 체크한 유저
     private User user;
 
     @Column(name="item")
