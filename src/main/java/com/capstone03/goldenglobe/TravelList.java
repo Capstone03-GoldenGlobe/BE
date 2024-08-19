@@ -1,6 +1,8 @@
 package com.capstone03.goldenglobe;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,10 +23,10 @@ public class TravelList {
   private String city;
 
   @Column(name = "start_date")
-  private LocalDateTime startDate;
+  private LocalDate startDate;
 
   @Column(name = "end_date")
-  private LocalDateTime endDate;
+  private LocalDate endDate;
 
   @Column(name = "barrier_free")
   private Boolean barrierFree;
