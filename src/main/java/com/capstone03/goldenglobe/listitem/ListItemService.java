@@ -7,6 +7,8 @@ import com.capstone03.goldenglobe.listgroup.ListGroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ListItemService {
@@ -32,5 +34,16 @@ public class ListItemService {
 
         // 저장
         return listItemRepository.save(listItem);
+    }
+
+    public ListItem editItem(Long item_id, String item_name){
+        Optional<ListItem> item = listItemRepository.findByItemId(item_id);
+        if (item.isPresent()) {
+            ListItem listItem = item.get();
+            listItem.setItem(item_name);
+            return listItemRepository.save(listItem);
+        } else {
+            throw new IllegalArgumentException("일치하는 item_id가 없음");
+        }
     }
 }
