@@ -5,6 +5,8 @@ import com.capstone03.goldenglobe.checklist.CheckListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ListGroupService {
@@ -22,5 +24,16 @@ public class ListGroupService {
 
         // 저장
         return listGroupRepository.save(listGroup);
+    }
+
+    public ListGroup editGroupName(Long group_id, String group_name){
+        Optional<ListGroup> group = listGroupRepository.findByGroupId(group_id);
+        if (group.isPresent()) {
+            ListGroup listGroup = group.get();
+            listGroup.setGroupName(group_name);
+            return listGroupRepository.save(listGroup);
+        } else {
+            throw new IllegalArgumentException("일치하는 group_id가 없음");
+        }
     }
 }
