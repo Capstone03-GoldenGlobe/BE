@@ -9,7 +9,7 @@ public class PdfList {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "pdf_id", nullable = false, length = 50)
-  private String pdfId;
+  private Long pdfId;
 
   @Column(name = "user_id", nullable = false, length = 50)
   private String userId;

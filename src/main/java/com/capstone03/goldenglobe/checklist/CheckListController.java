@@ -17,7 +17,7 @@ public class CheckListController {
     private final CheckListService checkListService;
 
     @PostMapping("/checklists")
-    public ResponseEntity<Map<String, Object>> postChecklist(@RequestParam String destId) {
+    public ResponseEntity<Map<String, Object>> postChecklist(@RequestParam Long destId) {
         String listId = checkListService.makeCheckList(destId);
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);

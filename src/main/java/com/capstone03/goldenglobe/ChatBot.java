@@ -9,7 +9,7 @@ public class ChatBot {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "chat_id", nullable = false, length = 50)
-  private String chatId;
+  private Long chatId;
 
   @Column(name = "dest_id", nullable = false, length = 50)
   private String destId;

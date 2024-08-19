@@ -10,10 +10,10 @@ public class ChatBotLog {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "log_id", nullable = false, length = 50)
-  private String logId;
+  private Long logId;
 
   @Column(name = "chat_id", nullable = false, length = 50)
-  private String chatId;
+  private Long chatId;
 
   @Column(name = "chat_date", nullable = false)
   private LocalDateTime chatDate;
