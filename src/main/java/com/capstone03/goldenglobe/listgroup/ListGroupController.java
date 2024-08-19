@@ -20,7 +20,7 @@ public class ListGroupController {
     private final ListGroupRepository listGroupRepository;
     private final ListGroupService listGroupService;
 
-    @PostMapping("/checklists/{list_id}")
+    @PostMapping("/checklists/{list_id}/groups")
     public ResponseEntity<Map<String, Object>> postGroup(@PathVariable Long list_id, @RequestParam String group_name) {
         ListGroup listGroup = listGroupService.makeGroup(list_id,group_name);
 
