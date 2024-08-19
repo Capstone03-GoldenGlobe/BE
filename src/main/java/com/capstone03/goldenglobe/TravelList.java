@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Table
 public class TravelList {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "dest_id", nullable = false, length = 20)
   private String destId;
 
