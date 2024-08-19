@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,6 +26,10 @@ public class CheckListController {
         return ResponseEntity.ok(response);
     }
 
-    //@GetMapping("/checklists/{dest_id}")
+    @GetMapping("/checklists/{dest_id}")
+    public ResponseEntity<Map<String, Object>> getCheckList(@PathVariable Long dest_id) {
+        Map<String, Object> response = checkListService.getCheckListDetails(dest_id);
+        return ResponseEntity.ok(response);
+    }
 
 }

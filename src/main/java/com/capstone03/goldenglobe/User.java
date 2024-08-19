@@ -1,12 +1,16 @@
 package com.capstone03.goldenglobe;
 import com.capstone03.goldenglobe.travellist.TravelList;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table
+@Getter
+@Setter
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
