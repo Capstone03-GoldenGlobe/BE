@@ -1,5 +1,6 @@
-package com.capstone03.goldenglobe;
+package com.capstone03.goldenglobe.travellist;
 
+import com.capstone03.goldenglobe.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

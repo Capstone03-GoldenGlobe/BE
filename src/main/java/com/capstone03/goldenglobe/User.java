@@ -1,10 +1,9 @@
 package com.capstone03.goldenglobe;
+import com.capstone03.goldenglobe.travellist.TravelList;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Entity
 @Table
