@@ -12,7 +12,7 @@ public class TravelList {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "dest_id", nullable = false, length = 20)
-  private String destId;
+  private Long destId;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)

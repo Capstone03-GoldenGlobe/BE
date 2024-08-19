@@ -12,7 +12,7 @@ public class CheckListService {
     private final CheckListRepository checkListRepository;
     private final TravelListRepository travelListRepository;
 
-    public String makeCheckList(String destId){
+    public String makeCheckList(Long destId){
         TravelList travelList = (TravelList) travelListRepository.findByDestId(destId);
         CheckList checkList = new CheckList();
         checkList.setDest(travelList);
