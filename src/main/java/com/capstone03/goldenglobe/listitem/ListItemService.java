@@ -36,12 +36,30 @@ public class ListItemService {
         return listItemRepository.save(listItem);
     }
 
-    public ListItem editItem(Long item_id, String item_name){
+    public ListItem editItemName(Long item_id, String item_name){
         Optional<ListItem> item = listItemRepository.findByItemId(item_id);
         if (item.isPresent()) {
             ListItem listItem = item.get();
             listItem.setItem(item_name);
             return listItemRepository.save(listItem);
+        } else {
+            throw new IllegalArgumentException("일치하는 item_id가 없음");
+        }
+    }
+
+    public ListItem editItemChecked(Long item_id){
+        Optional<ListItem> item = listItemRepository.findByItemId(item_id);
+        if (item.isPresent()) {
+            ListItem listItem = item.get();
+            listItem.setChecked(!listItem.isChecked());
+//             if(checked==True){
+//                // auth로 사용자 받아서
+//                listItem.setUser(유저아이디);
+//             } else {
+//                listItem.setUser(Null);
+//             }
+            ListItem updatedItem = listItemRepository.save(listItem);
+            return updatedItem;
         } else {
             throw new IllegalArgumentException("일치하는 item_id가 없음");
         }
