@@ -1,5 +1,6 @@
 package com.capstone03.goldenglobe.groupMemo;
 
+import com.capstone03.goldenglobe.listItem.ListItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
