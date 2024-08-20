@@ -64,4 +64,20 @@ public class ListItemService {
             throw new IllegalArgumentException("일치하는 item_id가 없음");
         }
     }
+
+    public ListItem editItemGroup(Long item_id, Long new_group_id){
+        Optional<ListItem> item = listItemRepository.findByItemId(item_id);
+        if (item.isPresent()) {
+            Optional<ListGroup> group = listGroupRepository.findByGroupId(new_group_id);
+            if(group.isPresent()){
+                ListItem listItem = item.get();
+                listItem.setGroup(group.get());
+                return listItemRepository.save(listItem);
+            } else {
+                throw new IllegalArgumentException("일치하는 group_id가 없음");
+            }
+        } else {
+            throw new IllegalArgumentException("일치하는 item_id가 없음");
+        }
+    }
 }

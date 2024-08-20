@@ -27,4 +27,6 @@ public class SharedList {
     @Column(name="user_color")
     private String userColor;
 
+    // permission column
+
 }
