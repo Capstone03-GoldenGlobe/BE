@@ -13,6 +13,7 @@ import java.util.Map;
 public class ListItemController {
 
     private final ListItemService listItemService;
+    private final ListItemRepository listItemRepository;
 
     @PostMapping("/checklists/{list_id}/{group_id}/items")
     public ResponseEntity<Map<String, Object>> postItem(@PathVariable Long list_id, @PathVariable Long group_id, @RequestParam String item_name) {
@@ -49,4 +50,16 @@ public class ListItemController {
 
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/checklists/items")
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long item_id) {
+        listItemRepository.deleteById(item_id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "항목 삭제 완료");
+
+        return ResponseEntity.ok(response);
+    }
+
 }
