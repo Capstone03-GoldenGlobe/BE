@@ -62,4 +62,15 @@ public class ListItemController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/checklists/items/{item_id}/groups")
+    public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable Long item_id, @RequestParam Long new_group_id){
+        listItemService.editItemGroup(item_id, new_group_id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "그룹 변경 완료");
+
+        return ResponseEntity.ok(response);
+    }
+
 }
