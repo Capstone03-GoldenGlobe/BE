@@ -3,10 +3,7 @@ package com.capstone03.goldenglobe.listGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +13,7 @@ import java.util.Map;
 public class ListGroupController {
 
     private final ListGroupService listGroupService;
+    private final ListGroupRepository listGroupRepository;
 
     @PostMapping("/checklists/{list_id}/groups")
     public ResponseEntity<Map<String, Object>> postGroup(@PathVariable Long list_id, @RequestParam String group_name) {
@@ -41,6 +39,17 @@ public class ListGroupController {
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "그룹 이름 변경 성공");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/checklists/groups")
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long group_id) {
+        listGroupRepository.deleteById(group_id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "그룹 삭제 완료 (그룹 메모, 아이템 포함)");
 
         return ResponseEntity.ok(response);
     }
