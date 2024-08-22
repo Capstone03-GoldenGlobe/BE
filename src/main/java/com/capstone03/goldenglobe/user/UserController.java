@@ -81,8 +81,7 @@ public class UserController {
   public ResponseEntity<String> findUserPassword(@RequestParam String email) {
     Optional<User> userOptional = userService.findByEmail(email);
     if (userOptional.isPresent()) {
-      // 비밀번호 찾기 로직 (예: 임시 비밀번호 발급 후 이메일 전송)
-      // 이 부분은 실제 구현 시 구체화해야 합니다.
+      // 일단임시 - 나중에 구현하기
       return new ResponseEntity<>("Password reset instructions sent to your email", HttpStatus.OK);
     } else {
       return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
