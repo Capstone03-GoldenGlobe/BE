@@ -29,7 +29,7 @@ public class User {
   @Column(name = "email", length = 30)
   private String email;
 
-  @Column(name = "password", nullable = false, length = 20)
+  @Column(name = "password", nullable = false, columnDefinition = "TEXT")
   private String password;
 
   @Column(name = "nickname", length = 10)
