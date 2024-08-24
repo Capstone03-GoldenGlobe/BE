@@ -34,7 +34,12 @@ public class TravelListController {
 
   @PostMapping("/create")
   public ResponseEntity<TravelList> createTravelList(@RequestBody TravelList travelList) {
+    if (travelList.getUser() == null || travelList.getUser().getUserId() == null) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     TravelList createdTravelList = travelListService.createTravelList(travelList);
     return new ResponseEntity<>(createdTravelList, HttpStatus.CREATED);
   }
+
 }
