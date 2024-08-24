@@ -29,6 +29,6 @@ public class TravelList {
   @Column(name = "end_date")
   private LocalDate endDate;
 
-  @Column(name = "barrier_free")
-  private Boolean barrierFree;
+//  @Column(name = "barrier_free")
+//  private Boolean barrierFree;
 }

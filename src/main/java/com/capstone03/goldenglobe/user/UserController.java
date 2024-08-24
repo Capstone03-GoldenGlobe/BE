@@ -26,7 +26,7 @@ public class UserController {
     // 비밀번호 암호화
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     userService.saveUser(user);
-    return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+    return new ResponseEntity<>("성공적으로 회원가입되었습니다.", HttpStatus.CREATED);
   }
 
   // 로그인
@@ -36,12 +36,12 @@ public class UserController {
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       if (passwordEncoder.matches(password, user.getPassword())) {
-        return new ResponseEntity<>("Login successful", HttpStatus.OK);
+        return new ResponseEntity<>("로그인 성공!", HttpStatus.OK);
       } else {
-        return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("잘못된 접근", HttpStatus.UNAUTHORIZED);
       }
     } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
 
@@ -69,9 +69,9 @@ public class UserController {
       user.setProfile(updatedUser.getProfile());
       user.setGender(updatedUser.getGender());
       userService.saveUser(user);
-      return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
+      return new ResponseEntity<>("사용자 정보가 성공적으로 수정되었습니다.", HttpStatus.OK);
     } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
 
@@ -81,9 +81,9 @@ public class UserController {
     Optional<User> userOptional = userService.findByEmail(email);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
-      return new ResponseEntity<>("Your user ID is: " + user.getUserId(), HttpStatus.OK);
+      return new ResponseEntity<>("ID: " + user.getUserId(), HttpStatus.OK);
     } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
 
@@ -93,9 +93,9 @@ public class UserController {
     Optional<User> userOptional = userService.findByEmail(email);
     if (userOptional.isPresent()) {
       // 일단임시 - 나중에 구현하기
-      return new ResponseEntity<>("Password reset instructions sent to your email", HttpStatus.OK);
+      return new ResponseEntity<>("암호 재설정 지침이 이메일로 전송되었습니다.", HttpStatus.OK);
     } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
 
@@ -105,9 +105,9 @@ public class UserController {
     Optional<User> userOptional = userService.findById(userId);
     if (userOptional.isPresent()) {
       userService.deleteUser(userId);
-      return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+      return new ResponseEntity<>("성공적으로 탈퇴처리되었습니다.", HttpStatus.OK);
     } else {
-      return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
 }
