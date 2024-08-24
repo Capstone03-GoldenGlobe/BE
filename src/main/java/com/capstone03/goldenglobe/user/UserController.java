@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -78,7 +79,8 @@ public class UserController {
 
   // 아이디 찾기
   @PostMapping("/users/help/idInquiry")
-  public ResponseEntity<String> findUserId(@RequestParam String email) {
+  public ResponseEntity<String> findUserId(@RequestBody Map<String, String> request) {
+    String email = request.get("email");
     Optional<User> userOptional = userService.findByEmail(email);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
@@ -88,17 +90,21 @@ public class UserController {
     }
   }
 
+
   // 비밀번호 찾기
   @PostMapping("/users/help/pwInquiry")
-  public ResponseEntity<String> findUserPassword(@RequestParam String email) {
+  public ResponseEntity<String> findUserPassword(@RequestBody Map<String, String> request) {
+    String email = request.get("email");
     Optional<User> userOptional = userService.findByEmail(email);
+
     if (userOptional.isPresent()) {
-      // 일단임시 - 나중에 구현하기
+      // 일단 임시 - 나중에 구현하기
       return new ResponseEntity<>("암호 재설정 지침이 이메일로 전송되었습니다.", HttpStatus.OK);
     } else {
       return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
+
 
   // 회원 탈퇴
   @DeleteMapping("/users/{user_id}")
