@@ -45,8 +45,19 @@ public class UserController {
     }
   }
 
+  // 사용자 정보 조회
+  @PostMapping("/myPage/{user_id}")
+  public ResponseEntity<User> getUserInfo(@PathVariable("user_id") Long userId) {
+    Optional<User> userOptional = userService.findById(userId);
+    if (userOptional.isPresent()) {
+      return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+  }
+
   // 사용자 정보 수정
-  @PutMapping("/users/{user_id}")
+  @GetMapping("/myPage/modifyProfile/{user_id}")
   public ResponseEntity<String> updateUserInfo(@PathVariable("user_id") Long userId, @RequestBody User updatedUser) {
     Optional<User> userOptional = userService.findById(userId);
     if (userOptional.isPresent()) {
