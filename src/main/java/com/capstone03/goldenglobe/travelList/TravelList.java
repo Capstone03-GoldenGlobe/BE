@@ -2,6 +2,7 @@ package com.capstone03.goldenglobe.travelList;
 
 import com.capstone03.goldenglobe.user.User;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
@@ -31,4 +32,53 @@ public class TravelList {
 
 //  @Column(name = "barrier_free")
 //  private Boolean barrierFree;
+
+  public Long getDestId() {
+    return destId;
+  }
+
+  public void setDestId(Long destId) {
+    this.destId = destId;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public LocalDate getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(LocalDate startDate) {
+    this.startDate = startDate;
+  }
+
+  public LocalDate getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(LocalDate endDate) {
+    this.endDate = endDate;
+  }
+
 }
