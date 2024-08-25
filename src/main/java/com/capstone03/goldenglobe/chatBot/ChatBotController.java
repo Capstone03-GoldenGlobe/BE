@@ -17,10 +17,11 @@ public class ChatBotController {
     this.chatBotService = chatBotService;
   }
 
-  @GetMapping("/{place_id}")
-  public ResponseEntity<List<ChatBot>> getChatBotsByPlaceId(@PathVariable("place_id") String placeId) {
-    List<ChatBot> chatBots = chatBotService.getChatBotsByPlaceId(placeId);
-    return ResponseEntity.ok(chatBots);
+  @PostMapping("/{place_id}")
+  public ResponseEntity<ChatBot> createChatBot(@PathVariable("place_id") String placeId, @RequestBody ChatBot chatBot) {
+    chatBot.setDestId(placeId); // place_id를 destId로 설정
+    ChatBot createdChatBot = chatBotService.createChatBot(chatBot);
+    return ResponseEntity.status(201).body(createdChatBot); // HTTP 201 Created
   }
 
   @GetMapping("/{place_id}/pdflist")

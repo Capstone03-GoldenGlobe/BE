@@ -22,4 +22,8 @@ public class ChatBotService {
   public List<ChatBot> getAllChatBots() {
     return chatBotRepository.findAll();
   }
+
+  public ChatBot createChatBot(ChatBot chatBot) {
+    return chatBotRepository.save(chatBot);
+  }
 }
