@@ -24,15 +24,25 @@ public class UserController {
   // 회원 가입
   @PostMapping("/auth/signup")
   public ResponseEntity<String> registerUser(@RequestBody User user) {
-    // 비밀번호 암호화
+    if (user.getEmail() == null || user.getPassword() == null) {
+      return new ResponseEntity<>("이메일과 비밀번호는 필수입니다.", HttpStatus.BAD_REQUEST);
+    }
+    if (userService.findByEmail(user.getEmail()).isPresent()) {
+      return new ResponseEntity<>("이미 가입된 이메일입니다.", HttpStatus.CONFLICT);
+    }
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     userService.saveUser(user);
+
     return new ResponseEntity<>("성공적으로 회원가입되었습니다.", HttpStatus.CREATED);
   }
 
+
   // 로그인
   @PostMapping("/auth/signin")
-  public ResponseEntity<String> loginUser(@RequestParam String email, @RequestParam String password) {
+  public ResponseEntity<String> loginUser(@RequestBody Map<String, String> loginRequest) {
+    String email = loginRequest.get("email");
+    String password = loginRequest.get("password");
+
     Optional<User> userOptional = userService.findByEmail(email);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
@@ -45,6 +55,8 @@ public class UserController {
       return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
+
+
 
   // 사용자 정보 조회
   @GetMapping("/myPage/{user_id}")
