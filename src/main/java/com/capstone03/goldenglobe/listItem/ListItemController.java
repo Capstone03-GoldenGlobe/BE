@@ -64,8 +64,8 @@ public class ListItemController {
     }
 
     @PutMapping("/checklists/items/{item_id}/groups")
-    public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable Long item_id, @RequestParam Long new_group_id){
-        listItemService.editItemGroup(item_id, new_group_id);
+    public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable Long item_id, @RequestParam Long new_group_id, Authentication auth){
+        listItemService.editItemGroup(item_id, new_group_id,auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
