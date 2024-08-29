@@ -1,5 +1,6 @@
-package com.capstone03.goldenglobe;
+package com.capstone03.goldenglobe.user;
 
+import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

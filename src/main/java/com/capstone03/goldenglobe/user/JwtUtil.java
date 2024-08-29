@@ -1,5 +1,6 @@
-package com.capstone03.goldenglobe;
+package com.capstone03.goldenglobe.user;
 
+import com.capstone03.goldenglobe.user.CustomUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

@@ -1,4 +1,4 @@
-package com.capstone03.goldenglobe;
+package com.capstone03.goldenglobe.user;
 
 import lombok.Getter;
 import lombok.Setter;
