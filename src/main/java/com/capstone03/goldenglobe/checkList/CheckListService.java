@@ -1,6 +1,6 @@
 package com.capstone03.goldenglobe.checkList;
 
-import com.capstone03.goldenglobe.sharedList.SharedListRepository;
+import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.UserRepository;
 import com.capstone03.goldenglobe.groupMemo.GroupMemo;
@@ -12,7 +12,6 @@ import com.capstone03.goldenglobe.listItem.ListItemRepository;
 import com.capstone03.goldenglobe.travelList.TravelList;
 import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.travelList.TravelListRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -35,7 +34,7 @@ public class CheckListService {
     private final ListGroupRepository listGroupRepository;
     private final ListItemRepository listItemRepository;
 
-    private final SharedListRepository sharedListRepository;
+    private final CheckListAuthCheck authCheck;
 
     public String makeCheckList(Long destId, Authentication auth){
         TravelList travelList = (TravelList) travelListRepository.findByDestId(destId);
@@ -52,9 +51,8 @@ public class CheckListService {
     }
 
     public Map<String, Object> getCheckListDetails(Long dest_id, Authentication auth) {
-        // 1. CheckList 조회
-        Optional<CheckList> optionalCheckList = checkListRepository.findById(dest_id);
-
+        // 1. dest_id로 CheckList 조회
+        Optional<CheckList> optionalCheckList = checkListRepository.findByDest_DestId(dest_id);
         if (optionalCheckList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다.");
         }
@@ -64,16 +62,8 @@ public class CheckListService {
         data.put("checklist", List.of(Map.of("list_id", checkList.getListId().toString())));
 
         // 유저 권한 확인 절차
-        // 1) 체크리스트 소유자와 일치하는지 확인
-        CustomUser customUser = (CustomUser) auth.getPrincipal();
-        Long authUserId = customUser.getId();
-        boolean checkOwner = checkList.getUser().getUserId().equals(authUserId);
-        if (!checkOwner){
-            // 2) 체크리스트 공유 여부 확인
-            boolean hasAccess = sharedListRepository.existsByList_ListIdAndUser_UserId(checkList.getListId(), authUserId);
-            if(!hasAccess){
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
-            }
+        if (!authCheck.hasAccessToCheckList(checkList.getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
         }
 
         // 2. ListGroup 조회
