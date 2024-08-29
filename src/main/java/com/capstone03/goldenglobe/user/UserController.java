@@ -1,7 +1,16 @@
 package com.capstone03.goldenglobe.user;
 
+import com.capstone03.goldenglobe.CustomUser;
+import com.capstone03.goldenglobe.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +19,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
   private final UserService userService;
   private final BCryptPasswordEncoder passwordEncoder;
-
-  @Autowired
-  public UserController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
-    this.userService = userService;
-    this.passwordEncoder = passwordEncoder;
-  }
+  private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
   // 회원 가입
   @PostMapping("/auth/signup")
@@ -129,5 +134,39 @@ public class UserController {
     } else {
       return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
+  }
+
+  @PostMapping("/login/jwt")
+  @ResponseBody
+  public String loginJWT(@RequestBody Map<String,String> data, HttpServletResponse response){
+    //1. 로그인
+    var authToken = new UsernamePasswordAuthenticationToken(data.get("email"),data.get("password"));
+    var auth = authenticationManagerBuilder.getObject().authenticate(authToken); // 아이디/비번을 DB와 비교해서 로그인
+
+    SecurityContextHolder.getContext().setAuthentication(auth);
+
+    //2. 입장권 배부
+    var jwt = JwtUtil.createToken(SecurityContextHolder.getContext().getAuthentication());
+    System.out.println(jwt);
+
+    //3. 쿠키에 jwt 저장
+    var cookie = new Cookie("jwt",jwt);
+    cookie.setMaxAge(100); //유효기간 100초로 설정
+    cookie.setHttpOnly(true);
+    cookie.setPath("/"); //쿠키가 전송될 URL : 모든 경로
+    response.addCookie(cookie); //유저 브라우저에 강제로 쿠키 저장
+
+    return jwt;
+  }
+
+  @GetMapping("/jwttest")
+  @ResponseBody
+  String mypageJWT(Authentication auth){
+    var user = (CustomUser) auth.getPrincipal();
+    System.out.println(user);
+    System.out.println(user.getEmail());
+    System.out.println(user.getAuthorities());
+    String userInfo = "Email: " + user.getEmail()+ ", Authorities: " + user.getAuthorities()+"\n"+user;
+    return userInfo;
   }
 }
