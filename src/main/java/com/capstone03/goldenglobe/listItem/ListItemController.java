@@ -2,6 +2,7 @@ package com.capstone03.goldenglobe.listItem;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +17,9 @@ public class ListItemController {
     private final ListItemRepository listItemRepository;
 
     @PostMapping("/checklists/{list_id}/{group_id}/items")
-    public ResponseEntity<Map<String, Object>> postItem(@PathVariable Long list_id, @PathVariable Long group_id, @RequestParam String item_name) {
+    public ResponseEntity<Map<String, Object>> postItem(@PathVariable Long list_id, @PathVariable Long group_id, @RequestParam String item_name, Authentication auth) {
 
-        ListItem listItem = listItemService.makeItem(list_id, group_id, item_name);
+        ListItem listItem = listItemService.makeItem(list_id, group_id, item_name, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();

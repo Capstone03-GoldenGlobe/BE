@@ -1,11 +1,15 @@
 package com.capstone03.goldenglobe.listItem;
 
+import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -15,7 +19,8 @@ public class ListItemService {
     private final ListItemRepository listItemRepository;
     private final CheckListRepository checkListRepository;
     private final ListGroupRepository listGroupRepository;
-    public ListItem makeItem(Long list_id, Long group_id, String item_name) {
+    private final CheckListAuthCheck authCheck;
+    public ListItem makeItem(Long list_id, Long group_id, String item_name, Authentication auth) {
 
         ListItem listItem = new ListItem();
 
@@ -26,6 +31,11 @@ public class ListItemService {
         // 일치하는 그룹이 있는지 확인
         ListGroup listGroup = listGroupRepository.findById(group_id)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 group_id가 없음"));
+
+        // 유저 권한 확인 절차
+        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
+        }
 
         listItem.setList(checkList);
         listItem.setGroup(listGroup);
