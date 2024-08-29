@@ -54,4 +54,13 @@ public class UserService {
     // 일단임시 - 비밀번호 생성하는 로직 구현하기
     return "temporaryPassword123";
   }
+
+  public void updateRefreshToken(String email, String refreshToken) {
+    Optional<User> userOptional = userRepository.findByEmail(email);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      user.setRefreshToken(refreshToken); // 리프레시 토큰 설정
+      userRepository.save(user); // 업데이트된 사용자 정보 저장
+    }
+  }
 }

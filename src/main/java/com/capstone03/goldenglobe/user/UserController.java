@@ -3,8 +3,10 @@ package com.capstone03.goldenglobe.user;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -12,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,11 +26,11 @@ public class UserController {
   private final BCryptPasswordEncoder passwordEncoder;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-  // 회원 가입
-  @PostMapping("/auth/signup")
-  public ResponseEntity<String> registerUser(@RequestBody User user) {
-    if (user.getEmail() == null || user.getPassword() == null) {
-      return new ResponseEntity<>("이메일과 비밀번호는 필수입니다.", HttpStatus.BAD_REQUEST);
+      // 회원 가입
+      @PostMapping("/auth/signup")
+      public ResponseEntity<String> registerUser(@RequestBody User user) {
+        if (user.getEmail() == null || user.getPassword() == null) {
+          return new ResponseEntity<>("이메일과 비밀번호는 필수입니다.", HttpStatus.BAD_REQUEST);
     }
     if (userService.findByEmail(user.getEmail()).isPresent()) {
       return new ResponseEntity<>("이미 가입된 이메일입니다.", HttpStatus.CONFLICT);
@@ -40,23 +43,54 @@ public class UserController {
 
 
   // 로그인
+
   @PostMapping("/auth/signin")
-  public ResponseEntity<String> loginUser(@RequestBody Map<String, String> loginRequest) {
+  public ResponseEntity<Map<String, String>> loginUser(@RequestBody Map<String, String> loginRequest, HttpServletResponse response) {
     String email = loginRequest.get("email");
     String password = loginRequest.get("password");
 
-    Optional<User> userOptional = userService.findByEmail(email);
-    if (userOptional.isPresent()) {
-      User user = userOptional.get();
-      if (passwordEncoder.matches(password, user.getPassword())) {
-        return new ResponseEntity<>("로그인 성공!", HttpStatus.OK);
-      } else {
-        return new ResponseEntity<>("잘못된 접근", HttpStatus.UNAUTHORIZED);
-      }
-    } else {
-      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
+    try {
+      // 1. 로그인 인증
+      var authToken = new UsernamePasswordAuthenticationToken(email, password);
+      var auth = authenticationManagerBuilder.getObject().authenticate(authToken);
+      SecurityContextHolder.getContext().setAuthentication(auth);
+
+      // 2. 액세스 토큰 및 리프레시 토큰 생성
+      var jwt = JwtUtil.createToken(auth);
+      var refreshToken = JwtUtil.createRefreshToken(auth);
+
+      // 3. 리프레시 토큰을 DB에 저장 (유저별로 관리)
+      userService.updateRefreshToken(email, refreshToken);
+
+      // 4. 쿠키에 액세스 토큰 저장
+      var jwtCookie = new Cookie("jwt", jwt);
+      jwtCookie.setMaxAge(600); // 유효기간 600초 설정 (예: 10분)
+      jwtCookie.setHttpOnly(true);
+      jwtCookie.setPath("/");
+
+      // 5. 쿠키에 리프레시 토큰 저장
+      var refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+      refreshTokenCookie.setMaxAge(86400); // 유효기간 1일 설정
+      refreshTokenCookie.setHttpOnly(true);
+      refreshTokenCookie.setPath("/");
+
+      response.addCookie(jwtCookie);
+      response.addCookie(refreshTokenCookie);
+
+      // 6. 응답에 토큰 정보 포함
+      Map<String, String> tokens = new HashMap<>();
+      tokens.put("accessToken", jwt);
+      tokens.put("refreshToken", refreshToken);
+
+      return new ResponseEntity<>(tokens, HttpStatus.OK);
+
+    } catch (BadCredentialsException e) {
+      return new ResponseEntity<>(Map.of("error", "잘못된 접근"), HttpStatus.UNAUTHORIZED);
+    } catch (Exception e) {
+      return new ResponseEntity<>(Map.of("error", "로그인 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
 
 
 
@@ -133,6 +167,7 @@ public class UserController {
     }
   }
 
+  /*
   @PostMapping("/login/jwt")
   @ResponseBody
   public String loginJWT(@RequestBody Map<String,String> data, HttpServletResponse response){
@@ -155,6 +190,7 @@ public class UserController {
 
     return jwt;
   }
+   */
 
   @GetMapping("/jwttest")
   @ResponseBody
