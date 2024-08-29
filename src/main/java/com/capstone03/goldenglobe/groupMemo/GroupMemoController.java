@@ -3,6 +3,7 @@ package com.capstone03.goldenglobe.groupMemo;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,8 @@ public class GroupMemoController {
     private final GroupMemoService groupMemoService;
     private final GroupMemoRepository groupMemoRepository;
     @PostMapping("/checklists/{group_id}/memos")
-    public ResponseEntity<Map<String, Object>> postMemo(@PathVariable Long group_id, @RequestParam String memo) {
-        GroupMemo groupMemo = groupMemoService.makeMemo(group_id,memo);
+    public ResponseEntity<Map<String, Object>> postMemo(@PathVariable Long group_id, @RequestParam String memo, Authentication auth) {
+        GroupMemo groupMemo = groupMemoService.makeMemo(group_id,memo, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();

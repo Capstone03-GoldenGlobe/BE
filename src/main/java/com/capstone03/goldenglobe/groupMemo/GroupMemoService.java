@@ -1,10 +1,12 @@
 package com.capstone03.goldenglobe.groupMemo;
 
+import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,11 +17,17 @@ import java.util.Optional;
 public class GroupMemoService {
     private final GroupMemoRepository groupMemoRepository;
     private final ListGroupRepository listGroupRepository;
+    private final CheckListAuthCheck authCheck;
 
-    public GroupMemo makeMemo(Long group_id, String memo){
+    public GroupMemo makeMemo(Long group_id, String memo, Authentication auth){
         // 일치하는 그룹이 있는지 확인
         ListGroup listGroup = listGroupRepository.findById(group_id)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 group_id가 없음"));
+
+        // 유저 권한 확인 절차
+        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
+        }
 
         try {
             GroupMemo groupMemo = new GroupMemo();
