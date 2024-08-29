@@ -29,13 +29,7 @@ public class ListItemService {
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 list_id가 없음"));
 
         // 일치하는 그룹이 있는지 확인
-        ListGroup listGroup = listGroupRepository.findById(group_id)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 group_id가 없음"));
-
-        // 유저 권한 확인 절차
-        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
-        }
+        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(group_id,auth);
 
         listItem.setList(checkList);
         listItem.setGroup(listGroup);
@@ -46,15 +40,10 @@ public class ListItemService {
         return listItemRepository.save(listItem);
     }
 
-    public ListItem editItemName(Long item_id, String item_name){
-        Optional<ListItem> item = listItemRepository.findByItemId(item_id);
-        if (item.isPresent()) {
-            ListItem listItem = item.get();
-            listItem.setItem(item_name);
-            return listItemRepository.save(listItem);
-        } else {
-            throw new IllegalArgumentException("일치하는 item_id가 없음");
-        }
+    public ListItem editItemName(Long item_id, String item_name, Authentication auth){
+        ListItem listItem = authCheck.findAndCheckAccessToItem(item_id,auth);
+        listItem.setItem(item_name);
+        return listItemRepository.save(listItem);
     }
 
     public ListItem editItemChecked(Long item_id){

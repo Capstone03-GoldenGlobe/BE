@@ -4,6 +4,8 @@ import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
+import com.capstone03.goldenglobe.listItem.ListItem;
+import com.capstone03.goldenglobe.listItem.ListItemRepository;
 import com.capstone03.goldenglobe.sharedList.SharedListRepository;
 import com.capstone03.goldenglobe.user.CustomUser;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class CheckListAuthCheck {
     private final CheckListRepository checkListRepository;
     private final SharedListRepository sharedListRepository;
     private final ListGroupRepository listGroupRepository;
+    private final ListItemRepository listItemRepository;
 
     public boolean hasAccessToCheckList(Long checkListId, Authentication auth) {
         // CheckList 존재 여부 확인
@@ -52,5 +55,19 @@ public class CheckListAuthCheck {
         }
 
         return listGroup;
+    }
+
+
+    public ListItem findAndCheckAccessToItem(Long itemId, Authentication auth) {
+        // 아이템 조회 및 존재하지 않을 경우 예외 처리
+        ListItem listItem = listItemRepository.findByItemId(itemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 item_id가 없음"));
+
+        // 체크리스트 권한 확인
+        if (!hasAccessToCheckList(listItem.getList().getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
+        }
+
+        return listItem;
     }
 }

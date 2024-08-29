@@ -30,8 +30,8 @@ public class ListItemController {
     }
 
     @PutMapping("/checklists/items/{item_id}/name")
-    public ResponseEntity<Map<String, Object>> editItemName(@PathVariable Long item_id, @RequestParam String item_name){
-        listItemService.editItemName(item_id, item_name);
+    public ResponseEntity<Map<String, Object>> editItemName(@PathVariable Long item_id, @RequestParam String item_name, Authentication auth){
+        listItemService.editItemName(item_id, item_name,auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
