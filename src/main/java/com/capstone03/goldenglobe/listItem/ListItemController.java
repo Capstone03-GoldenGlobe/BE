@@ -41,8 +41,8 @@ public class ListItemController {
     }
 
     @PutMapping("/checklists/items/{item_id}/checked")
-    public ResponseEntity<Map<String, Object>> editItemChecked(@PathVariable Long item_id){
-        ListItem updatedItem = listItemService.editItemChecked(item_id);
+    public ResponseEntity<Map<String, Object>> editItemChecked(@PathVariable Long item_id, Authentication auth){
+        ListItem updatedItem = listItemService.editItemChecked(item_id, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);

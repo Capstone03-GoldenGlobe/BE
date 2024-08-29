@@ -5,6 +5,9 @@ import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
+import com.capstone03.goldenglobe.user.CustomUser;
+import com.capstone03.goldenglobe.user.User;
+import com.capstone03.goldenglobe.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -19,6 +22,7 @@ public class ListItemService {
     private final ListItemRepository listItemRepository;
     private final CheckListRepository checkListRepository;
     private final ListGroupRepository listGroupRepository;
+    private final UserRepository userRepository;
     private final CheckListAuthCheck authCheck;
     public ListItem makeItem(Long list_id, Long group_id, String item_name, Authentication auth) {
 
@@ -46,22 +50,21 @@ public class ListItemService {
         return listItemRepository.save(listItem);
     }
 
-    public ListItem editItemChecked(Long item_id){
-        Optional<ListItem> item = listItemRepository.findByItemId(item_id);
-        if (item.isPresent()) {
-            ListItem listItem = item.get();
-            listItem.setChecked(!listItem.isChecked());
-//             if(checked==True){
-//                // auth로 사용자 받아서
-//                listItem.setUser(유저아이디);
-//             } else {
-//                listItem.setUser(Null);
-//             }
-            ListItem updatedItem = listItemRepository.save(listItem);
-            return updatedItem;
-        } else {
-            throw new IllegalArgumentException("일치하는 item_id가 없음");
-        }
+    public ListItem editItemChecked(Long item_id, Authentication auth){
+        ListItem listItem = authCheck.findAndCheckAccessToItem(item_id,auth);
+        listItem.setChecked(!listItem.isChecked());
+         if(listItem.isChecked()){ // true
+             CustomUser customUser = (CustomUser) auth.getPrincipal();
+             String userEmail = customUser.getEmail();
+             User user = userRepository.findByEmail(userEmail)
+                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
+             // 아이템에 유저 설정
+             listItem.setUser(user);
+         } else { // false
+            listItem.setUser(null);
+         }
+        return listItemRepository.save(listItem);
     }
 
     public ListItem editItemGroup(Long item_id, Long new_group_id, Authentication auth){
