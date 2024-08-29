@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table
@@ -41,6 +42,14 @@ public class User {
   @Column(name = "gender", length = 10)
   private String gender;
 
+  @Column(name = "refresh_token")
+  private String refreshToken;
+
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<TravelList> travelLists;
+
+  @ElementCollection(fetch = FetchType.EAGER)  // 권한을 EAGER 로딩
+  @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+  @Column(name = "role")
+  private Set<String> roles;
 }

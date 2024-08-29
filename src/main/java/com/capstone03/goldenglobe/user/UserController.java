@@ -3,6 +3,7 @@ package com.capstone03.goldenglobe.user;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,8 +43,9 @@ public class UserController {
 
 
   // 로그인
+
   @PostMapping("/auth/signin")
-  public ResponseEntity<String> loginUser(@RequestBody Map<String, String> loginRequest, HttpServletResponse response) {
+  public ResponseEntity<Map<String, String>> loginUser(@RequestBody Map<String, String> loginRequest, HttpServletResponse response) {
     String email = loginRequest.get("email");
     String password = loginRequest.get("password");
 
@@ -52,27 +55,42 @@ public class UserController {
       var auth = authenticationManagerBuilder.getObject().authenticate(authToken);
       SecurityContextHolder.getContext().setAuthentication(auth);
 
-      // 2. JWT 생성
-      var jwt = JwtUtil.createToken(SecurityContextHolder.getContext().getAuthentication());
+      // 2. 액세스 토큰 및 리프레시 토큰 생성
+      var jwt = JwtUtil.createToken(auth);
+      var refreshToken = JwtUtil.createRefreshToken(auth);
 
-      // 3. 쿠키에 JWT 저장
-      var cookie = new Cookie("jwt", jwt);
-      cookie.setMaxAge(100); // 유효기간 100초 설정
-      cookie.setHttpOnly(true);
-      cookie.setPath("/"); // 쿠키의 경로 설정 (모든 경로에 대해 유효)
-      response.addCookie(cookie);
+      // 3. 리프레시 토큰을 DB에 저장 (유저별로 관리)
+      userService.updateRefreshToken(email, refreshToken);
 
-      // 4. JWT를 포함한 성공 응답 반환
-      return new ResponseEntity<>("로그인 성공! JWT: " + jwt, HttpStatus.OK);
+      // 4. 쿠키에 액세스 토큰 저장
+      var jwtCookie = new Cookie("jwt", jwt);
+      jwtCookie.setMaxAge(600); // 유효기간 600초 설정 (예: 10분)
+      jwtCookie.setHttpOnly(true);
+      jwtCookie.setPath("/");
+
+      // 5. 쿠키에 리프레시 토큰 저장
+      var refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+      refreshTokenCookie.setMaxAge(86400); // 유효기간 1일 설정
+      refreshTokenCookie.setHttpOnly(true);
+      refreshTokenCookie.setPath("/");
+
+      response.addCookie(jwtCookie);
+      response.addCookie(refreshTokenCookie);
+
+      // 6. 응답에 토큰 정보 포함
+      Map<String, String> tokens = new HashMap<>();
+      tokens.put("accessToken", jwt);
+      tokens.put("refreshToken", refreshToken);
+
+      return new ResponseEntity<>(tokens, HttpStatus.OK);
 
     } catch (BadCredentialsException e) {
-      // 잘못된 자격 증명일 경우
-      return new ResponseEntity<>("잘못된 접근", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(Map.of("error", "잘못된 접근"), HttpStatus.UNAUTHORIZED);
     } catch (Exception e) {
-      // 다른 오류 처리
-      return new ResponseEntity<>("로그인 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(Map.of("error", "로그인 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
 
 
 
