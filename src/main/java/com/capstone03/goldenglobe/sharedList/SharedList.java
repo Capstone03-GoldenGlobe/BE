@@ -25,7 +25,7 @@ public class SharedList {
     private User user;
 
     @Column(name="user_color")
-    private String userColor;
+    private String userColor; // 헥스코드제한이 필요할까..?
 
     // permission column
 

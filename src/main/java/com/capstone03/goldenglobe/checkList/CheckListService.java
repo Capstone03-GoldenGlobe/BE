@@ -1,5 +1,7 @@
 package com.capstone03.goldenglobe.checkList;
 
+import com.capstone03.goldenglobe.CheckListAuthCheck;
+import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.UserRepository;
 import com.capstone03.goldenglobe.groupMemo.GroupMemo;
 import com.capstone03.goldenglobe.groupMemo.GroupMemoRepository;
@@ -10,9 +12,9 @@ import com.capstone03.goldenglobe.listItem.ListItemRepository;
 import com.capstone03.goldenglobe.travelList.TravelList;
 import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.travelList.TravelListRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,32 +34,37 @@ public class CheckListService {
     private final ListGroupRepository listGroupRepository;
     private final ListItemRepository listItemRepository;
 
-    public String makeCheckList(Long destId){
+    private final CheckListAuthCheck authCheck;
+
+    public String makeCheckList(Long destId, Authentication auth){
         TravelList travelList = (TravelList) travelListRepository.findByDestId(destId);
         CheckList checkList = new CheckList();
         checkList.setDest(travelList);
 
-        //User currentUser = getCurrentUser();
-        //checkList.setUser(currentUser);
-        // user_id가 1인 User 조회
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new EntityNotFoundException("User with ID 1 not found"));
+        CustomUser customUser = (CustomUser) auth.getPrincipal();
+        var user = new User();
+        user.setUserId(customUser.getId());
         checkList.setUser(user);
-
         checkList = checkListRepository.save(checkList);
 
         return checkList.getListId().toString();
     }
 
-    public Map<String, Object> getCheckListDetails(Long dest_id) {
-        // 1. CheckList 조회
-        Optional<CheckList> optionalCheckList = checkListRepository.findById(dest_id);
-
+    public Map<String, Object> getCheckListDetails(Long dest_id, Authentication auth) {
+        // 1. dest_id로 CheckList 조회
+        Optional<CheckList> optionalCheckList = checkListRepository.findByDest_DestId(dest_id);
         if (optionalCheckList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다.");
         }
 
         CheckList checkList = optionalCheckList.get();
+        Map<String, Object> data = new HashMap<>();
+        data.put("checklist", List.of(Map.of("list_id", checkList.getListId().toString())));
+
+        // 유저 권한 확인 절차
+        if (!authCheck.hasAccessToCheckList(checkList.getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
+        }
 
         // 2. ListGroup 조회
         List<ListGroup> listGroups = listGroupRepository.findByList_ListId(checkList.getListId());
@@ -105,11 +112,7 @@ public class CheckListService {
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "체크리스트 조회 성공");
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("checklist", List.of(Map.of("list_id", checkList.getListId().toString())));
         data.put("groups", groupsData);
-
         response.put("data", data);
         return response;
     }

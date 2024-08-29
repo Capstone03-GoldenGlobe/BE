@@ -1,10 +1,12 @@
 package com.capstone03.goldenglobe.groupMemo;
 
+import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,12 +17,10 @@ import java.util.Optional;
 public class GroupMemoService {
     private final GroupMemoRepository groupMemoRepository;
     private final ListGroupRepository listGroupRepository;
+    private final CheckListAuthCheck authCheck;
 
-    public GroupMemo makeMemo(Long group_id, String memo){
-        // 일치하는 그룹이 있는지 확인
-        ListGroup listGroup = listGroupRepository.findById(group_id)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 group_id가 없음"));
-
+    public GroupMemo makeMemo(Long group_id, String memo, Authentication auth){
+        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(group_id,auth);
         try {
             GroupMemo groupMemo = new GroupMemo();
             groupMemo.setGroup(listGroup);
@@ -33,7 +33,8 @@ public class GroupMemoService {
         }
     }
 
-    public GroupMemo editMemo(Long group_id, String memo){
+    public GroupMemo editMemo(Long group_id, String memo, Authentication auth){
+        authCheck.findAndCheckAccessToGroup(group_id,auth);
         Optional<GroupMemo> item = groupMemoRepository.findByGroup_GroupId(group_id);
         if (item.isPresent()) {
             GroupMemo groupMemo = item.get();
@@ -42,5 +43,22 @@ public class GroupMemoService {
         } else {
             throw new IllegalArgumentException("해당 group_id로 메모를 찾을 수 없습니다. 메모를 먼저 생성해주세요");
         }
+    }
+
+    public void deleteMemo(Long memo_id, Authentication auth) {
+        // 메모 조회 및 존재하지 않을 경우 예외 처리
+        GroupMemo groupMemo = groupMemoRepository.findById(memo_id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 memo_id가 없음"));
+
+        // ListGroup 조회
+        ListGroup listGroup = groupMemo.getGroup();
+
+        // 유저 권한 확인 절차
+        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
+        }
+
+        // 메모 삭제
+        groupMemoRepository.deleteById(memo_id);
     }
 }
