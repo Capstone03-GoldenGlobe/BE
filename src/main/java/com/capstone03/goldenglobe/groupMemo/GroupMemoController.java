@@ -40,8 +40,9 @@ public class GroupMemoController {
     }
 
     @DeleteMapping("/checklists/memos")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long memo_id) {
-        groupMemoRepository.deleteById(memo_id);
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long memo_id, Authentication auth) {
+
+        groupMemoService.deleteMemo(memo_id, auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
