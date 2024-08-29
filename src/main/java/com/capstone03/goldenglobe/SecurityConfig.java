@@ -1,11 +1,15 @@
 package com.capstone03.goldenglobe;
 
 import com.capstone03.goldenglobe.user.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
@@ -16,13 +20,16 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public CsrfTokenRepository csrfTokenRepository(){
+    public CsrfTokenRepository csrfTokenRepository() {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
         repository.setHeaderName("X-XSRF-TOKEN");
         return repository;
@@ -30,19 +37,33 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf((crsf) -> crsf.disable());
-
-        http.sessionManagement((session)-> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
-
-        // 필터 등록: 2번째 인자의 필터 실행 전, 첫번째 인자의 필터 실행 (필터 별 실행 순서가 따로 있음)
-        http.addFilterBefore(new JwtFilter(), ExceptionTranslationFilter.class);
-
-        http.authorizeHttpRequests((authorize) ->
-                authorize.requestMatchers("/**").permitAll() // 전체 URI에 대해 허용(로그인 필요x)
-        );
+        http.csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(new JwtFilter(), ExceptionTranslationFilter.class)
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/user/**").hasRole("USER")
+                .anyRequest().authenticated())
+            .formLogin(formLogin -> formLogin
+                .loginPage("/login")
+                .loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/home", true)
+                .failureUrl("/login?error=true"))
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true"))
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/login")));
 
         return http.build();
+    }
+
+    @Bean
+    @Primary
+    public AuthenticationManagerBuilder auth(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder());
+        return auth;
     }
 }
