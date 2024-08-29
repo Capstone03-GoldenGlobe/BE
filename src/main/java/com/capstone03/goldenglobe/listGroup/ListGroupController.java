@@ -2,6 +2,7 @@ package com.capstone03.goldenglobe.listGroup;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +17,8 @@ public class ListGroupController {
     private final ListGroupRepository listGroupRepository;
 
     @PostMapping("/checklists/{list_id}/groups")
-    public ResponseEntity<Map<String, Object>> postGroup(@PathVariable Long list_id, @RequestParam String group_name) {
-        ListGroup listGroup = listGroupService.makeGroup(list_id,group_name);
+    public ResponseEntity<Map<String, Object>> postGroup(@PathVariable Long list_id, @RequestParam String group_name, Authentication auth) {
+        ListGroup listGroup = listGroupService.makeGroup(list_id,group_name, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
