@@ -34,8 +34,8 @@ public class ListGroupController {
     }
 
     @PutMapping("/checklists/groups/{group_id}")
-    public ResponseEntity<Map<String, Object>> editGroupName(@PathVariable Long group_id, @RequestParam String group_name){
-        listGroupService.editGroupName(group_id, group_name);
+    public ResponseEntity<Map<String, Object>> editGroupName(@PathVariable Long group_id, @RequestParam String group_name, Authentication auth){
+        listGroupService.editGroupName(group_id, group_name, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);

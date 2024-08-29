@@ -26,7 +26,6 @@ public class ListGroupService {
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 list_id가 없음"));
 
         // 유저 권한 확인
-        // 유저 권한 확인 절차
         if (!authCheck.hasAccessToCheckList(list_id, auth)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
         }
@@ -39,14 +38,20 @@ public class ListGroupService {
         return listGroupRepository.save(listGroup);
     }
 
-    public ListGroup editGroupName(Long group_id, String group_name){
-        Optional<ListGroup> group = listGroupRepository.findByGroupId(group_id);
-        if (group.isPresent()) {
-            ListGroup listGroup = group.get();
-            listGroup.setGroupName(group_name);
-            return listGroupRepository.save(listGroup);
-        } else {
-            throw new IllegalArgumentException("일치하는 group_id가 없음");
+    public ListGroup editGroupName(Long group_id, String group_name, Authentication auth){
+        // 그룹 조회 및 존재하지 않을 경우 예외 처리
+        ListGroup listGroup = listGroupRepository.findByGroupId(group_id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 group_id가 없음"));
+
+        // 유저 권한 확인 절차
+        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
         }
+
+        // 그룹 이름 변경
+        listGroup.setGroupName(group_name);
+
+        // 변경된 그룹 저장 후 반환
+        return listGroupRepository.save(listGroup);
     }
 }
