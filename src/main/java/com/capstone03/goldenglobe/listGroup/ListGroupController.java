@@ -1,10 +1,12 @@
 package com.capstone03.goldenglobe.listGroup;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +47,8 @@ public class ListGroupController {
     }
 
     @DeleteMapping("/checklists/groups")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long group_id) {
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long group_id,Authentication auth) {
+        listGroupService.findAndCheckAccessToGroup(group_id, auth);
         listGroupRepository.deleteById(group_id);
 
         Map<String, Object> response = new HashMap<>();

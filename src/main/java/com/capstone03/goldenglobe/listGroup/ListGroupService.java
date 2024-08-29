@@ -20,6 +20,19 @@ public class ListGroupService {
 
     private final CheckListAuthCheck authCheck;
 
+    public ListGroup findAndCheckAccessToGroup(Long groupId, Authentication auth) {
+        // 그룹 조회 및 존재하지 않을 경우 예외 처리
+        ListGroup listGroup = listGroupRepository.findByGroupId(groupId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 group_id가 없음"));
+
+        // 유저 권한 확인 절차
+        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
+        }
+
+        return listGroup;
+    }
+
     public ListGroup makeGroup(Long list_id, String group_name, Authentication auth){
         // 일치하는 체크리스트가 있는지 확인
         CheckList checkList = checkListRepository.findById(list_id)
@@ -40,13 +53,7 @@ public class ListGroupService {
 
     public ListGroup editGroupName(Long group_id, String group_name, Authentication auth){
         // 그룹 조회 및 존재하지 않을 경우 예외 처리
-        ListGroup listGroup = listGroupRepository.findByGroupId(group_id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 group_id가 없음"));
-
-        // 유저 권한 확인 절차
-        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
-        }
+        ListGroup listGroup = findAndCheckAccessToGroup(group_id,auth);
 
         // 그룹 이름 변경
         listGroup.setGroupName(group_name);
