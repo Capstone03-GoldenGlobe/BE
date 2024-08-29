@@ -48,8 +48,7 @@ public class ListGroupController {
 
     @DeleteMapping("/checklists/groups")
     public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long group_id,Authentication auth) {
-        listGroupService.findAndCheckAccessToGroup(group_id, auth);
-        listGroupRepository.deleteById(group_id);
+        listGroupService.deleteGroup(group_id, auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
