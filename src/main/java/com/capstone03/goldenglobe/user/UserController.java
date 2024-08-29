@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -41,20 +42,35 @@ public class UserController {
 
   // 로그인
   @PostMapping("/auth/signin")
-  public ResponseEntity<String> loginUser(@RequestBody Map<String, String> loginRequest) {
+  public ResponseEntity<String> loginUser(@RequestBody Map<String, String> loginRequest, HttpServletResponse response) {
     String email = loginRequest.get("email");
     String password = loginRequest.get("password");
 
-    Optional<User> userOptional = userService.findByEmail(email);
-    if (userOptional.isPresent()) {
-      User user = userOptional.get();
-      if (passwordEncoder.matches(password, user.getPassword())) {
-        return new ResponseEntity<>("로그인 성공!", HttpStatus.OK);
-      } else {
-        return new ResponseEntity<>("잘못된 접근", HttpStatus.UNAUTHORIZED);
-      }
-    } else {
-      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
+    try {
+      // 1. 로그인 인증
+      var authToken = new UsernamePasswordAuthenticationToken(email, password);
+      var auth = authenticationManagerBuilder.getObject().authenticate(authToken);
+      SecurityContextHolder.getContext().setAuthentication(auth);
+
+      // 2. JWT 생성
+      var jwt = JwtUtil.createToken(SecurityContextHolder.getContext().getAuthentication());
+
+      // 3. 쿠키에 JWT 저장
+      var cookie = new Cookie("jwt", jwt);
+      cookie.setMaxAge(100); // 유효기간 100초 설정
+      cookie.setHttpOnly(true);
+      cookie.setPath("/"); // 쿠키의 경로 설정 (모든 경로에 대해 유효)
+      response.addCookie(cookie);
+
+      // 4. JWT를 포함한 성공 응답 반환
+      return new ResponseEntity<>("로그인 성공! JWT: " + jwt, HttpStatus.OK);
+
+    } catch (BadCredentialsException e) {
+      // 잘못된 자격 증명일 경우
+      return new ResponseEntity<>("잘못된 접근", HttpStatus.UNAUTHORIZED);
+    } catch (Exception e) {
+      // 다른 오류 처리
+      return new ResponseEntity<>("로그인 실패", HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -133,6 +149,7 @@ public class UserController {
     }
   }
 
+  /*
   @PostMapping("/login/jwt")
   @ResponseBody
   public String loginJWT(@RequestBody Map<String,String> data, HttpServletResponse response){
@@ -155,6 +172,7 @@ public class UserController {
 
     return jwt;
   }
+   */
 
   @GetMapping("/jwttest")
   @ResponseBody
