@@ -4,12 +4,15 @@ import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
+import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Check;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,26 @@ public class SharedListService {
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 user_id가 없음"));
         sharedList.setUser(user);
 
+        return sharedListRepository.save(sharedList);
+    }
+
+    public SharedList changeColor(Long list_id, String user_color, Authentication auth){
+        // 체크리스트 접근 권한 확인
+        authCheck.findAndCheckAccessToList(list_id, auth);
+
+        // 현재 인증된 유저의 이메일을 가져와서 유저 아이디 조회
+        CustomUser customUser = (CustomUser) auth.getPrincipal();
+        User user = userRepository.findByEmail(customUser.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
+        // listId와 userId로 SharedList 조회
+        SharedList sharedList = sharedListRepository.findByList_ListIdAndUser_UserId(list_id, user.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SharedList를 찾을 수 없습니다."));
+
+        // 색상 변경
+        sharedList.setUserColor(user_color);
+
+        // 변경된 SharedList 저장
         return sharedListRepository.save(sharedList);
     }
 }
