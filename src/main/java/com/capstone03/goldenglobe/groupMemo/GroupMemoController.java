@@ -29,8 +29,8 @@ public class GroupMemoController {
     }
 
     @PutMapping("/checklists/{group_id}/memos")
-    public ResponseEntity<Map<String, Object>> editMemo(@PathVariable Long group_id, @RequestParam String memo){
-        groupMemoService.editMemo(group_id, memo);
+    public ResponseEntity<Map<String, Object>> editMemo(@PathVariable Long group_id, @RequestParam String memo,Authentication auth){
+        groupMemoService.editMemo(group_id, memo, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);

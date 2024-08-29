@@ -20,15 +20,7 @@ public class GroupMemoService {
     private final CheckListAuthCheck authCheck;
 
     public GroupMemo makeMemo(Long group_id, String memo, Authentication auth){
-        // 일치하는 그룹이 있는지 확인
-        ListGroup listGroup = listGroupRepository.findById(group_id)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 group_id가 없음"));
-
-        // 유저 권한 확인 절차
-        if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
-        }
-
+        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(group_id,auth);
         try {
             GroupMemo groupMemo = new GroupMemo();
             groupMemo.setGroup(listGroup);
@@ -41,7 +33,8 @@ public class GroupMemoService {
         }
     }
 
-    public GroupMemo editMemo(Long group_id, String memo){
+    public GroupMemo editMemo(Long group_id, String memo, Authentication auth){
+        authCheck.findAndCheckAccessToGroup(group_id,auth);
         Optional<GroupMemo> item = groupMemoRepository.findByGroup_GroupId(group_id);
         if (item.isPresent()) {
             GroupMemo groupMemo = item.get();
