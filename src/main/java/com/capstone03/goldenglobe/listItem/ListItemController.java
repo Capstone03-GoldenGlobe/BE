@@ -52,17 +52,6 @@ public class ListItemController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/checklists/items")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long item_id) {
-        listItemRepository.deleteById(item_id);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
-        response.put("message", "항목 삭제 완료");
-
-        return ResponseEntity.ok(response);
-    }
-
     @PutMapping("/checklists/items/{item_id}/groups")
     public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable Long item_id, @RequestParam Long new_group_id, Authentication auth){
         listItemService.editItemGroup(item_id, new_group_id,auth);
@@ -70,6 +59,17 @@ public class ListItemController {
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "그룹 변경 완료");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/checklists/items")
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long item_id,Authentication auth) {
+        listItemService.deleteItem(item_id,auth);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        response.put("message", "항목 삭제 완료");
 
         return ResponseEntity.ok(response);
     }

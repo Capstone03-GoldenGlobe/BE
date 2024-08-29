@@ -3,6 +3,7 @@ package com.capstone03.goldenglobe.listItem;
 import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
+import com.capstone03.goldenglobe.groupMemo.GroupMemo;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
 import com.capstone03.goldenglobe.user.CustomUser;
@@ -76,5 +77,11 @@ public class ListItemService {
         } else {
             throw new IllegalArgumentException("일치하는 group_id가 없음");
         }
+    }
+
+    public void deleteItem(Long item_id, Authentication auth) {
+        authCheck.findAndCheckAccessToItem(item_id,auth);
+        // 아이템 삭제
+        listItemRepository.deleteById(item_id);
     }
 }
