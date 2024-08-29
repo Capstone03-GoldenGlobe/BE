@@ -1,6 +1,6 @@
 package com.capstone03.goldenglobe.travelList;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +9,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/place")
+@RequiredArgsConstructor
 public class TravelListController {
 
-  @Autowired
-  private TravelListService travelListService;
+  private final TravelListService travelListService;
 
   @GetMapping("/list")
   public ResponseEntity<List<TravelList>> getTravelList(
@@ -42,4 +42,16 @@ public class TravelListController {
     return new ResponseEntity<>(createdTravelList, HttpStatus.CREATED);
   }
 
+  @PostMapping("/create/{dest_id}")
+  public ResponseEntity<TravelList> createTravelListWithDestId(
+      @PathVariable Long dest_id,
+      @RequestBody TravelList travelList) {
+    if (travelList.getUser() == null || travelList.getUser().getUserId() == null) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    travelList.setDestId(dest_id);
+    TravelList createdTravelList = travelListService.createTravelList(travelList);
+    return new ResponseEntity<>(createdTravelList, HttpStatus.CREATED);
+  }
 }

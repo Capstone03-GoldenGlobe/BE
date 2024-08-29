@@ -1,15 +1,18 @@
 package com.capstone03.goldenglobe.travelList;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.capstone03.goldenglobe.checkList.CheckList;
+import com.capstone03.goldenglobe.checkList.CheckListRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TravelListService {
 
-  @Autowired
-  private TravelListRepository travelListRepository;
+  private final TravelListRepository travelListRepository; // final로 수정
+  private final CheckListRepository checkListRepository; // final로 수정
 
   public List<TravelList> getTravelList(String country, String city) {
     if (country != null && city != null) {
@@ -27,6 +30,14 @@ public class TravelListService {
   }
 
   public TravelList createTravelList(TravelList travelList) {
-    return travelListRepository.save(travelList);
+    TravelList savedTravelList = travelListRepository.save(travelList);
+
+    // 체크리스트 자동 생성
+    CheckList checkList = new CheckList();
+    checkList.setUser(savedTravelList.getUser());
+    checkList.setDest(savedTravelList);
+    checkListRepository.save(checkList);
+
+    return savedTravelList;
   }
 }

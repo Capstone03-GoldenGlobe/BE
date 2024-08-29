@@ -26,11 +26,11 @@ public class UserController {
   private final BCryptPasswordEncoder passwordEncoder;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-  // 회원 가입
-  @PostMapping("/auth/signup")
-  public ResponseEntity<String> registerUser(@RequestBody User user) {
-    if (user.getEmail() == null || user.getPassword() == null) {
-      return new ResponseEntity<>("이메일과 비밀번호는 필수입니다.", HttpStatus.BAD_REQUEST);
+      // 회원 가입
+      @PostMapping("/auth/signup")
+      public ResponseEntity<String> registerUser(@RequestBody User user) {
+        if (user.getEmail() == null || user.getPassword() == null) {
+          return new ResponseEntity<>("이메일과 비밀번호는 필수입니다.", HttpStatus.BAD_REQUEST);
     }
     if (userService.findByEmail(user.getEmail()).isPresent()) {
       return new ResponseEntity<>("이미 가입된 이메일입니다.", HttpStatus.CONFLICT);
