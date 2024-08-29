@@ -22,13 +22,7 @@ public class ListGroupService {
 
     public ListGroup makeGroup(Long list_id, String group_name, Authentication auth){
         // 일치하는 체크리스트가 있는지 확인
-        CheckList checkList = checkListRepository.findById(list_id)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 list_id가 없음"));
-
-        // 유저 권한 확인
-        if (!authCheck.hasAccessToCheckList(list_id, auth)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
-        }
+        CheckList checkList = authCheck.findAndCheckAccessToList(list_id,auth);
 
         ListGroup listGroup = new ListGroup();
         listGroup.setList(checkList);

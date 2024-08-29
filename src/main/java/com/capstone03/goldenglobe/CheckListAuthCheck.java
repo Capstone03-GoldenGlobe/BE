@@ -44,6 +44,19 @@ public class CheckListAuthCheck {
         return sharedListRepository.existsByList_ListIdAndUser_UserId(checkList.getListId(), authUserId);
     }
 
+    public CheckList findAndCheckAccessToList(Long checkListId, Authentication auth) {
+        // CheckList 존재 여부 확인
+        CheckList checkList = checkListRepository.findByListId(checkListId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다."));
+
+        // 유저 권한 확인 절차
+        if (!hasAccessToCheckList(checkListId, auth)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
+        }
+
+        return checkList;
+    }
+
     public ListGroup findAndCheckAccessToGroup(Long groupId, Authentication auth) {
         // 그룹 조회 및 존재하지 않을 경우 예외 처리
         ListGroup listGroup = listGroupRepository.findByGroupId(groupId)
