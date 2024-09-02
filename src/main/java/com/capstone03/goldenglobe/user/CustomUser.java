@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.util.Collection;
 
 @Getter
@@ -16,13 +15,19 @@ import java.util.Collection;
 public class CustomUser extends User implements UserDetails {
     private Long id;
     private String name;
-    private String email;
+    private String cellphone;
 
     public CustomUser(
-            String username,
-            String password,
-            Collection<? extends GrantedAuthority> authorities
+        String cellphone,
+        String password,
+        Collection<? extends GrantedAuthority> authorities
     ) {
-        super(username, password, authorities);
+        super(cellphone, password, authorities);
+        this.cellphone = cellphone;
+    }
+
+    @Override
+    public String getUsername() {
+        return cellphone;
     }
 }

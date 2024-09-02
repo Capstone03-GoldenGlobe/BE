@@ -20,9 +20,9 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  // 이메일로 사용자 찾기
-  public Optional<User> findByEmail(String email) {
-    return userRepository.findByEmail(email);
+  // 전화번호로 사용자 찾기
+  public Optional<User> findByCellphone(String cellphone) {
+    return userRepository.findByCellphone(cellphone);
   }
 
   // 사용자 ID로 사용자 찾기
@@ -36,15 +36,15 @@ public class UserService {
   }
 
   // 비밀번호 재설정 로직
-  public String resetPassword(String email) {
-    Optional<User> userOptional = findByEmail(email);
+  public String resetPassword(String cellphone) {
+    Optional<User> userOptional = findByCellphone(cellphone);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       String temporaryPassword = generateTemporaryPassword();
       user.setPassword(temporaryPassword); // 일단임시 - 실제로 암호화되어야 함
       saveUser(user);
-      // 이메일 전송 로직 추가 가능
-      return "Password reset instructions sent to your email";
+      // SMS 전송 로직 추가 가능
+      return "Password reset instructions sent to your phone";
     }
     return "User not found";
   }
@@ -55,8 +55,9 @@ public class UserService {
     return "temporaryPassword123";
   }
 
-  public void updateRefreshToken(String email, String refreshToken) {
-    Optional<User> userOptional = userRepository.findByEmail(email);
+  // 리프레시 토큰 업데이트
+  public void updateRefreshToken(String cellphone, String refreshToken) {
+    Optional<User> userOptional = userRepository.findByCellphone(cellphone);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       user.setRefreshToken(refreshToken); // 리프레시 토큰 설정

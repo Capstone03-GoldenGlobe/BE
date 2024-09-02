@@ -26,14 +26,14 @@ public class UserController {
   private final BCryptPasswordEncoder passwordEncoder;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-      // 회원 가입
-      @PostMapping("/auth/signup")
-      public ResponseEntity<String> registerUser(@RequestBody User user) {
-        if (user.getEmail() == null || user.getPassword() == null) {
-          return new ResponseEntity<>("이메일과 비밀번호는 필수입니다.", HttpStatus.BAD_REQUEST);
+  // 회원 가입
+  @PostMapping("/auth/signup")
+  public ResponseEntity<String> registerUser(@RequestBody User user) {
+    if (user.getCellphone() == null || user.getPassword() == null) {
+      return new ResponseEntity<>("전화번호와 비밀번호는 필수입니다.", HttpStatus.BAD_REQUEST);
     }
-    if (userService.findByEmail(user.getEmail()).isPresent()) {
-      return new ResponseEntity<>("이미 가입된 이메일입니다.", HttpStatus.CONFLICT);
+    if (userService.findByCellphone(user.getCellphone()).isPresent()) {
+      return new ResponseEntity<>("이미 가입된 전화번호입니다.", HttpStatus.CONFLICT);
     }
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     userService.saveUser(user);
@@ -41,17 +41,15 @@ public class UserController {
     return new ResponseEntity<>("성공적으로 회원가입되었습니다.", HttpStatus.CREATED);
   }
 
-
   // 로그인
-
   @PostMapping("/auth/signin")
   public ResponseEntity<Map<String, String>> loginUser(@RequestBody Map<String, String> loginRequest, HttpServletResponse response) {
-    String email = loginRequest.get("email");
+    String cellphone = loginRequest.get("cellphone");
     String password = loginRequest.get("password");
 
     try {
       // 1. 로그인 인증
-      var authToken = new UsernamePasswordAuthenticationToken(email, password);
+      var authToken = new UsernamePasswordAuthenticationToken(cellphone, password);
       var auth = authenticationManagerBuilder.getObject().authenticate(authToken);
       SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -60,7 +58,7 @@ public class UserController {
       var refreshToken = JwtUtil.createRefreshToken(auth);
 
       // 3. 리프레시 토큰을 DB에 저장 (유저별로 관리)
-      userService.updateRefreshToken(email, refreshToken);
+      userService.updateRefreshToken(cellphone, refreshToken);
 
       // 4. 쿠키에 액세스 토큰 저장
       var jwtCookie = new Cookie("jwt", jwt);
@@ -91,8 +89,7 @@ public class UserController {
     }
   }
 
-
-
+  // 로그아웃
 
   // 사용자 정보 조회
   @GetMapping("/myPage/{user_id}")
@@ -104,7 +101,6 @@ public class UserController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
-
 
   // 사용자 정보 수정
   @PutMapping("/myPage/modifyProfile/{user_id}")
@@ -125,36 +121,6 @@ public class UserController {
     }
   }
 
-
-  // 아이디 찾기
-  @PostMapping("/users/help/idInquiry")
-  public ResponseEntity<String> findUserId(@RequestBody Map<String, String> request) {
-    String email = request.get("email");
-    Optional<User> userOptional = userService.findByEmail(email);
-    if (userOptional.isPresent()) {
-      User user = userOptional.get();
-      return new ResponseEntity<>("ID: " + user.getUserId(), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
-    }
-  }
-
-
-  // 비밀번호 찾기
-  @PostMapping("/users/help/pwInquiry")
-  public ResponseEntity<String> findUserPassword(@RequestBody Map<String, String> request) {
-    String email = request.get("email");
-    Optional<User> userOptional = userService.findByEmail(email);
-
-    if (userOptional.isPresent()) {
-      // 일단 임시 - 나중에 구현하기
-      return new ResponseEntity<>("암호 재설정 지침이 이메일로 전송되었습니다.", HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
-    }
-  }
-
-
   // 회원 탈퇴
   @DeleteMapping("/users/{user_id}")
   public ResponseEntity<String> deleteUser(@PathVariable("user_id") Long userId) {
@@ -165,41 +131,5 @@ public class UserController {
     } else {
       return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
-  }
-
-  /*
-  @PostMapping("/login/jwt")
-  @ResponseBody
-  public String loginJWT(@RequestBody Map<String,String> data, HttpServletResponse response){
-    //1. 로그인
-    var authToken = new UsernamePasswordAuthenticationToken(data.get("email"),data.get("password"));
-    var auth = authenticationManagerBuilder.getObject().authenticate(authToken); // 아이디/비번을 DB와 비교해서 로그인
-
-    SecurityContextHolder.getContext().setAuthentication(auth);
-
-    //2. 입장권 배부
-    var jwt = JwtUtil.createToken(SecurityContextHolder.getContext().getAuthentication());
-    System.out.println(jwt);
-
-    //3. 쿠키에 jwt 저장
-    var cookie = new Cookie("jwt",jwt);
-    cookie.setMaxAge(100); //유효기간 100초로 설정
-    cookie.setHttpOnly(true);
-    cookie.setPath("/"); //쿠키가 전송될 URL : 모든 경로
-    response.addCookie(cookie); //유저 브라우저에 강제로 쿠키 저장
-
-    return jwt;
-  }
-   */
-
-  @GetMapping("/jwttest")
-  @ResponseBody
-  String mypageJWT(Authentication auth){
-    var user = (CustomUser) auth.getPrincipal();
-    System.out.println(user);
-    System.out.println(user.getEmail());
-    System.out.println(user.getAuthorities());
-    String userInfo = "Email: " + user.getEmail()+ ", Authorities: " + user.getAuthorities()+"\n"+user;
-    return userInfo;
   }
 }
