@@ -27,9 +27,6 @@ public class User {
   @Column(name = "cellphone", length = 20)
   private String cellphone;
 
-  @Column(name = "email", length = 30)
-  private String email;
-
   @Column(name = "password", nullable = false, columnDefinition = "TEXT")
   private String password;
 
