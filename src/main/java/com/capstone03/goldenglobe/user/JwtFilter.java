@@ -59,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실
         );
         customUser.setId(((Number) claim.get("id")).longValue()); // id 설정
         customUser.setName(claim.get("name").toString()); // name 설정
-        customUser.setEmail(claim.get("email").toString());
+//        customUser.setEmail(claim.get("email").toString());
 
         var authToken = new UsernamePasswordAuthenticationToken(
                 customUser, null, authorities
