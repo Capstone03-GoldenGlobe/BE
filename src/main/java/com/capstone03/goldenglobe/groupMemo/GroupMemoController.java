@@ -30,11 +30,17 @@ public class GroupMemoController {
 
     @PutMapping("/checklists/{group_id}/memos")
     public ResponseEntity<Map<String, Object>> editMemo(@PathVariable Long group_id, @RequestParam String memo,Authentication auth){
-        groupMemoService.editMemo(group_id, memo, auth);
+        GroupMemo updatedMemo = groupMemoService.editMemo(group_id, memo, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
-        response.put("message", "항목 변경 완료");
+        response.put("message", "메모 변경 완료");
+
+        Map<String, Object> updated = new HashMap<>();
+        updated.put("group_id",group_id);
+        updated.put("memo_id",updatedMemo.getMemoId());
+        updated.put("memo",updatedMemo.getMemo());
+        response.put("updatedGroup",updated);
 
         return ResponseEntity.ok(response);
     }
