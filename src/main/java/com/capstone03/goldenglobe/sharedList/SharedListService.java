@@ -42,7 +42,7 @@ public class SharedListService {
 
         // 현재 인증된 유저의 이메일을 가져와서 유저 아이디 조회
         CustomUser customUser = (CustomUser) auth.getPrincipal();
-        User user = userRepository.findByEmail(customUser.getEmail())
+        User user = userRepository.findByCellphone(customUser.getCellphone())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
         // listId와 userId로 SharedList 조회
