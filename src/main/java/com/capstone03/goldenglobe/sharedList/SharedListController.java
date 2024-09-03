@@ -1,6 +1,7 @@
 package com.capstone03.goldenglobe.sharedList;
 
 import com.capstone03.goldenglobe.listGroup.ListGroup;
+import com.capstone03.goldenglobe.listItem.ListItemDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,12 +31,15 @@ public class SharedListController {
 
     @PutMapping("/checklists/share/{list_id}/color")
     public ResponseEntity<Map<String, Object>> changeColor(@PathVariable Long list_id, @RequestParam String user_color, Authentication auth) {
-        sharedListService.changeColor(list_id, user_color, auth);
+        SharedList updatedShared = sharedListService.changeColor(list_id, user_color, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "공유 색상 변경");
+
+        SharedListDTO updated = SharedListDTO.fromEntity(updatedShared);
+        response.put("updatedShared", updated);
 
         return ResponseEntity.ok(response);
     }

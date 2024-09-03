@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -15,6 +16,8 @@ public class ListItemController {
 
     private final ListItemService listItemService;
     private final ListItemRepository listItemRepository;
+
+
 
     @PostMapping("/checklists/{list_id}/{group_id}/items")
     public ResponseEntity<Map<String, Object>> postItem(@PathVariable Long list_id, @PathVariable Long group_id, @RequestParam String item_name, Authentication auth) {
@@ -26,16 +29,22 @@ public class ListItemController {
         response.put("status", 200);
         response.put("message", "항목 추가 완료");
 
+        ListItemDTO toDto = ListItemDTO.fromEntity(listItem);
+        response.put("item", toDto);
+
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/checklists/items/{item_id}/name")
     public ResponseEntity<Map<String, Object>> editItemName(@PathVariable Long item_id, @RequestParam String item_name, Authentication auth){
-        listItemService.editItemName(item_id, item_name,auth);
+        ListItem updatedItem = listItemService.editItemName(item_id, item_name,auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "항목 변경 완료");
+
+        ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
+        response.put("updatedItem", updated);
 
         return ResponseEntity.ok(response);
     }
@@ -46,19 +55,24 @@ public class ListItemController {
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
-        response.put("message", "변경 완료");
-        response.put("ischecked", updatedItem.isChecked());
+        response.put("message", "체크/체크해제 변경 완료");
+
+        ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
+        response.put("updatedItem", updated);
 
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/checklists/items/{item_id}/groups")
     public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable Long item_id, @RequestParam Long new_group_id, Authentication auth){
-        listItemService.editItemGroup(item_id, new_group_id,auth);
+        ListItem updatedItem = listItemService.editItemGroup(item_id, new_group_id,auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "그룹 변경 완료");
+
+        ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
+        response.put("updatedItem", updated);
 
         return ResponseEntity.ok(response);
     }

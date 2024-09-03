@@ -1,5 +1,6 @@
 package com.capstone03.goldenglobe.listGroup;
 
+import com.capstone03.goldenglobe.listItem.ListItemDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -27,21 +29,22 @@ public class ListGroupController {
         response.put("status", 200);
         response.put("message", "그룹 추가 성공");
 
-        Map<String, String> data = new HashMap<>();
-        data.put("group_id", listGroup.getGroupId().toString());
-        data.put("group_name", listGroup.getGroupName());
-        response.put("data", data);
+        ListGroupDTO toDto = ListGroupDTO.fromEntity(listGroup);
+        response.put("group",toDto);
 
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/checklists/groups/{group_id}")
     public ResponseEntity<Map<String, Object>> editGroupName(@PathVariable Long group_id, @RequestParam String group_name, Authentication auth){
-        listGroupService.editGroupName(group_id, group_name, auth);
+        ListGroup updatedGroup = listGroupService.editGroupName(group_id, group_name, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "그룹 이름 변경 성공");
+
+        ListGroupDTO updated = ListGroupDTO.fromEntity(updatedGroup);
+        response.put("updatedGroup",updated);
 
         return ResponseEntity.ok(response);
     }
