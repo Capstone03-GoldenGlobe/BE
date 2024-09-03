@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -54,11 +55,19 @@ public class ListItemController {
 
     @PutMapping("/checklists/items/{item_id}/groups")
     public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable Long item_id, @RequestParam Long new_group_id, Authentication auth){
-        listItemService.editItemGroup(item_id, new_group_id,auth);
+        ListItem updatedItem = listItemService.editItemGroup(item_id, new_group_id,auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "그룹 변경 완료");
+
+        Map<String, Object> updated = new HashMap<>();
+        updated.put("item_id",updatedItem.getItemId());
+        updated.put("user_id", updatedItem.getUser() != null ? updatedItem.getUser().getUserId() : null);
+        updated.put("item_name",updatedItem.getItem());
+        updated.put("ischecked",updatedItem.isChecked());
+        updated.put("group_id",updatedItem.getGroup().getGroupId());
+        response.put("updatedItem",updated);
 
         return ResponseEntity.ok(response);
     }
