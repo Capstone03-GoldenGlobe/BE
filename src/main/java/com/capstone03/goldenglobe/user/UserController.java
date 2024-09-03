@@ -1,6 +1,7 @@
 package com.capstone03.goldenglobe.user;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,42 @@ public class UserController {
   }
 
   // 로그아웃
+  @PostMapping("/auth/logout")
+  public ResponseEntity<String> logoutUser(HttpServletRequest request) {
+    // 쿠키에서 JWT 토큰 가져오기
+    Cookie[] cookies = request.getCookies();
+    String jwtToken = null;
+
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if ("jwt".equals(cookie.getName())) {
+          jwtToken = cookie.getValue();
+          break;
+        }
+      }
+    }
+
+    if (jwtToken != null) {
+      // JWT 토큰을 블랙리스트에 추가
+      userService.blacklistToken(jwtToken);
+
+      // JWT와 리프레시 토큰을 삭제하기 위해 쿠키를 만료 처리
+      Cookie jwtCookie = new Cookie("jwt", null);
+      jwtCookie.setMaxAge(0);
+      jwtCookie.setPath("/");
+      HttpServletResponse response = (HttpServletResponse) request;
+      response.addCookie(jwtCookie);
+
+      Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+      refreshTokenCookie.setMaxAge(0);
+      refreshTokenCookie.setPath("/");
+      response.addCookie(refreshTokenCookie);
+
+      return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
+    }
+
+    return new ResponseEntity<>("No token found", HttpStatus.BAD_REQUEST);
+  }
 
   // 사용자 정보 조회
   @GetMapping("/myPage/{user_id}")
