@@ -56,8 +56,8 @@ public class ListItemService {
         listItem.setChecked(!listItem.isChecked());
          if(listItem.isChecked()){ // true
              CustomUser customUser = (CustomUser) auth.getPrincipal();
-             String userEmail = customUser.getEmail();
-             User user = userRepository.findByEmail(userEmail)
+             var userPhone = customUser.getCellphone();
+             User user = userRepository.findByCellphone(userPhone)
                      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
              // 아이템에 유저 설정

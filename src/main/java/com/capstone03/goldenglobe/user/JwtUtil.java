@@ -29,7 +29,7 @@ public class JwtUtil {
             .claim("name", user.getName())
             .claim("id", user.getId())
             .claim("authorities", authorities)
-            .claim("email", user.getUsername())
+            .claim("cellphone", user.getCellphone())
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + 1800000)) // 30분
             .signWith(key)
