@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class SharedListService {
@@ -59,5 +61,15 @@ public class SharedListService {
         SharedList sharedList = authCheck.findSharedListByListIdAndAuth(list_id,auth);
         // 아이템 삭제
         sharedListRepository.delete(sharedList);
+    }
+
+    public void deleteShareOwner(Long list_id, Long user_id, Authentication auth){
+        Boolean canCheck = authCheck.isOwner(list_id, auth);
+        if (canCheck) {
+            Optional<SharedList> sharedList = sharedListRepository.findByList_ListIdAndUser_UserId(list_id, user_id);
+            sharedList.ifPresent(sharedListRepository::delete);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "공유 해제 권한이 없습니다. 체크리스트의 소유자가 아닙니다.");
+        }
     }
 }
