@@ -6,6 +6,7 @@ import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
 import com.capstone03.goldenglobe.listItem.ListItem;
 import com.capstone03.goldenglobe.listItem.ListItemRepository;
+import com.capstone03.goldenglobe.sharedList.SharedList;
 import com.capstone03.goldenglobe.sharedList.SharedListRepository;
 import com.capstone03.goldenglobe.user.CustomUser;
 import lombok.RequiredArgsConstructor;
@@ -82,5 +83,13 @@ public class CheckListAuthCheck {
         }
 
         return listItem;
+    }
+
+    public SharedList findSharedListByListIdAndAuth(Long listId, Authentication auth) {
+        CustomUser customUser = (CustomUser) auth.getPrincipal();
+        Long authUserId = customUser.getId();
+
+        return sharedListRepository.findByList_ListIdAndUser_UserId(listId, authUserId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "공유된 체크리스트를 찾을 수 없습니다."));
     }
 }

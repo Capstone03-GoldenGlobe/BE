@@ -3,12 +3,10 @@ package com.capstone03.goldenglobe.sharedList;
 import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
-import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Check;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -54,5 +52,12 @@ public class SharedListService {
 
         // 변경된 SharedList 저장
         return sharedListRepository.save(sharedList);
+    }
+
+    public void deleteShare(Long list_id, Authentication auth) {
+        //list_id 로 sharedList 찾고, 그중 auth의 id와 일치하는 user_id가 있는 것 삭제
+        SharedList sharedList = authCheck.findSharedListByListIdAndAuth(list_id,auth);
+        // 아이템 삭제
+        sharedListRepository.delete(sharedList);
     }
 }
