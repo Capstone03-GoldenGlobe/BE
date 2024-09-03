@@ -17,6 +17,8 @@ public class ListItemController {
     private final ListItemService listItemService;
     private final ListItemRepository listItemRepository;
 
+
+
     @PostMapping("/checklists/{list_id}/{group_id}/items")
     public ResponseEntity<Map<String, Object>> postItem(@PathVariable Long list_id, @PathVariable Long group_id, @RequestParam String item_name, Authentication auth) {
 
@@ -27,16 +29,22 @@ public class ListItemController {
         response.put("status", 200);
         response.put("message", "항목 추가 완료");
 
+        ListItemDTO toDto = ListItemDTO.fromEntity(listItem);
+        response.put("item", toDto);
+
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/checklists/items/{item_id}/name")
     public ResponseEntity<Map<String, Object>> editItemName(@PathVariable Long item_id, @RequestParam String item_name, Authentication auth){
-        listItemService.editItemName(item_id, item_name,auth);
+        ListItem updatedItem = listItemService.editItemName(item_id, item_name,auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "항목 변경 완료");
+
+        ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
+        response.put("updatedItem", updated);
 
         return ResponseEntity.ok(response);
     }
@@ -47,8 +55,10 @@ public class ListItemController {
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
-        response.put("message", "변경 완료");
-        response.put("ischecked", updatedItem.isChecked());
+        response.put("message", "체크/체크해제 변경 완료");
+
+        ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
+        response.put("updatedItem", updated);
 
         return ResponseEntity.ok(response);
     }
@@ -61,13 +71,8 @@ public class ListItemController {
         response.put("status", 200);
         response.put("message", "그룹 변경 완료");
 
-        Map<String, Object> updated = new HashMap<>();
-        updated.put("item_id",updatedItem.getItemId());
-        updated.put("user_id", updatedItem.getUser() != null ? updatedItem.getUser().getUserId() : null);
-        updated.put("item_name",updatedItem.getItem());
-        updated.put("ischecked",updatedItem.isChecked());
-        updated.put("group_id",updatedItem.getGroup().getGroupId());
-        response.put("updatedItem",updated);
+        ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
+        response.put("updatedItem", updated);
 
         return ResponseEntity.ok(response);
     }
