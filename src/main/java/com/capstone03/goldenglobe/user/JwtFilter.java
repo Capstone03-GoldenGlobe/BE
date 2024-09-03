@@ -53,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실
         var authorities = Arrays.stream(arr).map(a -> new SimpleGrantedAuthority(a)).toList(); // 권한들은 SimpleGrantedAuthority안에 넣어야 함. 넣고 toList()로 리스트 변환
 
         var customUser = new CustomUser(
-                claim.get("email").toString(),
+                claim.get("cellphone").toString(),
                 "none",
                 authorities
         );

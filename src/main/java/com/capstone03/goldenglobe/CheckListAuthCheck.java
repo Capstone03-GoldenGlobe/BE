@@ -6,6 +6,7 @@ import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
 import com.capstone03.goldenglobe.listItem.ListItem;
 import com.capstone03.goldenglobe.listItem.ListItemRepository;
+import com.capstone03.goldenglobe.sharedList.SharedList;
 import com.capstone03.goldenglobe.sharedList.SharedListRepository;
 import com.capstone03.goldenglobe.user.CustomUser;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,9 @@ public class CheckListAuthCheck {
     private final ListGroupRepository listGroupRepository;
     private final ListItemRepository listItemRepository;
 
-    public boolean hasAccessToCheckList(Long checkListId, Authentication auth) {
+    public boolean isOwner(long listId, Authentication auth){
         // CheckList 존재 여부 확인
-        CheckList checkList = checkListRepository.findByListId(checkListId)
+        CheckList checkList = checkListRepository.findByListId(listId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다."));
 
         // 유저 권한 확인
@@ -39,9 +40,20 @@ public class CheckListAuthCheck {
         if (checkList.getUser().getUserId().equals(authUserId)) {
             return true;
         }
+        return false;
+    }
+
+    public boolean hasAccessToCheckList(Long checkListId, Authentication auth) {
+        if(isOwner(checkListId,auth)){
+            return true;
+        }
+
+        // 유저 권한 확인
+        CustomUser customUser = (CustomUser) auth.getPrincipal();
+        Long authUserId = customUser.getId();
 
         // 체크리스트 공유 여부 확인
-        return sharedListRepository.existsByList_ListIdAndUser_UserId(checkList.getListId(), authUserId);
+        return sharedListRepository.existsByList_ListIdAndUser_UserId(checkListId, authUserId);
     }
 
     public CheckList findAndCheckAccessToList(Long checkListId, Authentication auth) {
@@ -82,5 +94,13 @@ public class CheckListAuthCheck {
         }
 
         return listItem;
+    }
+
+    public SharedList findSharedListByListIdAndAuth(Long listId, Authentication auth) {
+        CustomUser customUser = (CustomUser) auth.getPrincipal();
+        Long authUserId = customUser.getId();
+
+        return sharedListRepository.findByList_ListIdAndUser_UserId(listId, authUserId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "공유된 체크리스트를 찾을 수 없습니다."));
     }
 }
