@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -37,11 +38,16 @@ public class ListGroupController {
 
     @PutMapping("/checklists/groups/{group_id}")
     public ResponseEntity<Map<String, Object>> editGroupName(@PathVariable Long group_id, @RequestParam String group_name, Authentication auth){
-        listGroupService.editGroupName(group_id, group_name, auth);
+        ListGroup updatedGroup = listGroupService.editGroupName(group_id, group_name, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
         response.put("message", "그룹 이름 변경 성공");
+
+        Map<String, Object> updated = new HashMap<>();
+        updated.put("group_id",updatedGroup.getGroupId());
+        updated.put("group_name",updatedGroup.getGroupName());
+        response.put("updatedGroup",updated);
 
         return ResponseEntity.ok(response);
     }
