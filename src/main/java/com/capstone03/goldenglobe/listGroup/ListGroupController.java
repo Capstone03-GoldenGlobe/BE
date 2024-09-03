@@ -1,5 +1,6 @@
 package com.capstone03.goldenglobe.listGroup;
 
+import com.capstone03.goldenglobe.listItem.ListItemDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +29,8 @@ public class ListGroupController {
         response.put("status", 200);
         response.put("message", "그룹 추가 성공");
 
-        Map<String, String> data = new HashMap<>();
-        data.put("group_id", listGroup.getGroupId().toString());
-        data.put("group_name", listGroup.getGroupName());
-        response.put("data", data);
+        ListGroupDTO toDto = ListGroupDTO.fromEntity(listGroup);
+        response.put("group",toDto);
 
         return ResponseEntity.ok(response);
     }
@@ -44,9 +43,7 @@ public class ListGroupController {
         response.put("status", 200);
         response.put("message", "그룹 이름 변경 성공");
 
-        Map<String, Object> updated = new HashMap<>();
-        updated.put("group_id",updatedGroup.getGroupId());
-        updated.put("group_name",updatedGroup.getGroupName());
+        ListGroupDTO updated = ListGroupDTO.fromEntity(updatedGroup);
         response.put("updatedGroup",updated);
 
         return ResponseEntity.ok(response);
