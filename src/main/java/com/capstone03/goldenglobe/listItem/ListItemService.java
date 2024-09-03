@@ -25,34 +25,34 @@ public class ListItemService {
     private final ListGroupRepository listGroupRepository;
     private final UserRepository userRepository;
     private final CheckListAuthCheck authCheck;
-    public ListItem makeItem(Long list_id, Long group_id, String item_name, Authentication auth) {
+    public ListItem makeItem(Long listId, Long groupId, String itemName, Authentication auth) {
 
         ListItem listItem = new ListItem();
 
         // 일치하는 체크리스트가 있는지 확인
-        CheckList checkList = checkListRepository.findById(list_id)
+        CheckList checkList = checkListRepository.findById(listId)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 list_id가 없음"));
 
         // 일치하는 그룹이 있는지 확인
-        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(group_id,auth);
+        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(groupId,auth);
 
         listItem.setList(checkList);
         listItem.setGroup(listGroup);
 
-        listItem.setItem(item_name);
+        listItem.setItem(itemName);
 
         // 저장
         return listItemRepository.save(listItem);
     }
 
-    public ListItem editItemName(Long item_id, String item_name, Authentication auth){
-        ListItem listItem = authCheck.findAndCheckAccessToItem(item_id,auth);
-        listItem.setItem(item_name);
+    public ListItem editItemName(Long itemId, String itemName, Authentication auth){
+        ListItem listItem = authCheck.findAndCheckAccessToItem(itemId,auth);
+        listItem.setItem(itemName);
         return listItemRepository.save(listItem);
     }
 
-    public ListItem editItemChecked(Long item_id, Authentication auth){
-        ListItem listItem = authCheck.findAndCheckAccessToItem(item_id,auth);
+    public ListItem editItemChecked(Long itemId, Authentication auth){
+        ListItem listItem = authCheck.findAndCheckAccessToItem(itemId,auth);
         listItem.setChecked(!listItem.isChecked());
          if(listItem.isChecked()){ // true
              CustomUser customUser = (CustomUser) auth.getPrincipal();
@@ -68,9 +68,9 @@ public class ListItemService {
         return listItemRepository.save(listItem);
     }
 
-    public ListItem editItemGroup(Long item_id, Long new_group_id, Authentication auth){
-        ListItem listItem = authCheck.findAndCheckAccessToItem(item_id,auth);
-        Optional<ListGroup> group = listGroupRepository.findByGroupId(new_group_id);
+    public ListItem editItemGroup(Long itemId, Long newGroupId, Authentication auth){
+        ListItem listItem = authCheck.findAndCheckAccessToItem(itemId,auth);
+        Optional<ListGroup> group = listGroupRepository.findByGroupId(newGroupId);
         if(group.isPresent()){
             listItem.setGroup(group.get());
             return listItemRepository.save(listItem);
@@ -79,9 +79,9 @@ public class ListItemService {
         }
     }
 
-    public void deleteItem(Long item_id, Authentication auth) {
-        authCheck.findAndCheckAccessToItem(item_id,auth);
+    public void deleteItem(Long itemId, Authentication auth) {
+        authCheck.findAndCheckAccessToItem(itemId,auth);
         // 아이템 삭제
-        listItemRepository.deleteById(item_id);
+        listItemRepository.deleteById(itemId);
     }
 }

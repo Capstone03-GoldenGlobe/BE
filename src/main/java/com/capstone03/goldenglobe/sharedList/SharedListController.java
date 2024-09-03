@@ -18,8 +18,8 @@ public class SharedListController {
     private final SharedListService sharedListService;
 
     @PostMapping("/checklists/share/{list_id}")
-    public ResponseEntity<Map<String, Object>> postGroup(@PathVariable Long list_id, @RequestParam Long user_id, Authentication auth) {
-        sharedListService.addUser(list_id, user_id, auth);
+    public ResponseEntity<Map<String, Object>> postGroup(@PathVariable("list_id") Long listId, @RequestParam("user_id") Long userId, Authentication auth) {
+        sharedListService.addUser(listId, userId, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
@@ -30,8 +30,8 @@ public class SharedListController {
     }
 
     @PutMapping("/checklists/share/{list_id}/color")
-    public ResponseEntity<Map<String, Object>> changeColor(@PathVariable Long list_id, @RequestParam String user_color, Authentication auth) {
-        SharedList updatedShared = sharedListService.changeColor(list_id, user_color, auth);
+    public ResponseEntity<Map<String, Object>> changeColor(@PathVariable("list_id") Long listId, @RequestParam("user_color") String userColor, Authentication auth) {
+        SharedList updatedShared = sharedListService.changeColor(listId, userColor, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
@@ -45,9 +45,9 @@ public class SharedListController {
     }
 
     @DeleteMapping("/checklists/share/{list_id}") // 공유 설정 해제
-    public ResponseEntity<Map<String, Object>> deleteShare(@PathVariable Long list_id, Authentication auth) {
+    public ResponseEntity<Map<String, Object>> deleteShare(@PathVariable("list_id") Long listId, Authentication auth) {
         // 삭제 처리 service 함수
-        sharedListService.deleteShare(list_id,auth);
+        sharedListService.deleteShare(listId,auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
@@ -58,9 +58,9 @@ public class SharedListController {
     }
 
     @DeleteMapping("/checklists/share/{list_id}/{user_id}") // 공유 설정 해제
-    public ResponseEntity<Map<String, Object>> deleteShare(@PathVariable Long list_id, @PathVariable Long user_id, Authentication auth) {
+    public ResponseEntity<Map<String, Object>> deleteShare(@PathVariable("list_id") Long listId, @PathVariable("user_id") Long userId, Authentication auth) {
         // 삭제 처리 service 함수
-        sharedListService.deleteShareOwner(list_id, user_id, auth);
+        sharedListService.deleteShareOwner(listId, userId, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();

@@ -28,7 +28,7 @@ public class CheckListController {
     }
 
     @GetMapping("/checklists/{dest_id}")
-    public ResponseEntity<Map<String, Object>> getCheckList(@PathVariable Long dest_id,Authentication auth) {
+    public ResponseEntity<Map<String, Object>> getCheckList(@PathVariable("dest_id") Long dest_id,Authentication auth) {
         System.out.println("controller 실행");
         Map<String, Object> response = checkListService.getCheckListDetails(dest_id,auth);
         return ResponseEntity.ok(response);

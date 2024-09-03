@@ -20,31 +20,31 @@ public class ListGroupService {
 
     private final CheckListAuthCheck authCheck;
 
-    public ListGroup makeGroup(Long list_id, String group_name, Authentication auth){
+    public ListGroup makeGroup(Long listId, String groupName, Authentication auth){
         // 일치하는 체크리스트가 있는지 확인
-        CheckList checkList = authCheck.findAndCheckAccessToList(list_id,auth);
+        CheckList checkList = authCheck.findAndCheckAccessToList(listId,auth);
 
         ListGroup listGroup = new ListGroup();
         listGroup.setList(checkList);
-        listGroup.setGroupName(group_name);
+        listGroup.setGroupName(groupName);
 
         // 저장
         return listGroupRepository.save(listGroup);
     }
 
-    public ListGroup editGroupName(Long group_id, String group_name, Authentication auth){
+    public ListGroup editGroupName(Long groupId, String groupName, Authentication auth){
         // 그룹 조회 및 존재하지 않을 경우 예외 처리
-        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(group_id,auth);
+        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(groupId,auth);
 
         // 그룹 이름 변경
-        listGroup.setGroupName(group_name);
+        listGroup.setGroupName(groupName);
 
         // 변경된 그룹 저장 후 반환
         return listGroupRepository.save(listGroup);
     }
 
-    public void deleteGroup(Long group_id, Authentication auth) {
-        authCheck.findAndCheckAccessToGroup(group_id, auth);
-        listGroupRepository.deleteById(group_id);
+    public void deleteGroup(Long groupId, Authentication auth) {
+        authCheck.findAndCheckAccessToGroup(groupId, auth);
+        listGroupRepository.deleteById(groupId);
     }
 }

@@ -50,9 +50,9 @@ public class CheckListService {
         return checkList.getListId().toString();
     }
 
-    public Map<String, Object> getCheckListDetails(Long dest_id, Authentication auth) {
+    public Map<String, Object> getCheckListDetails(Long destId, Authentication auth) {
         // 1. dest_id로 CheckList 조회
-        Optional<CheckList> optionalCheckList = checkListRepository.findByDest_DestId(dest_id);
+        Optional<CheckList> optionalCheckList = checkListRepository.findByDest_DestId(destId);
         if (optionalCheckList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다.");
         }

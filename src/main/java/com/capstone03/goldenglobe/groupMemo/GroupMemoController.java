@@ -18,8 +18,8 @@ public class GroupMemoController {
     private final GroupMemoService groupMemoService;
     private final GroupMemoRepository groupMemoRepository;
     @PostMapping("/checklists/{group_id}/memos")
-    public ResponseEntity<Map<String, Object>> postMemo(@PathVariable Long group_id, @RequestParam String memo, Authentication auth) {
-        GroupMemo groupMemo = groupMemoService.makeMemo(group_id,memo, auth);
+    public ResponseEntity<Map<String, Object>> postMemo(@PathVariable("group_id") Long groupId, @RequestParam String memo, Authentication auth) {
+        GroupMemo groupMemo = groupMemoService.makeMemo(groupId,memo, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
@@ -30,8 +30,8 @@ public class GroupMemoController {
     }
 
     @PutMapping("/checklists/{group_id}/memos")
-    public ResponseEntity<Map<String, Object>> editMemo(@PathVariable Long group_id, @RequestParam String memo,Authentication auth){
-        GroupMemo updatedMemo = groupMemoService.editMemo(group_id, memo, auth);
+    public ResponseEntity<Map<String, Object>> editMemo(@PathVariable("group_id") Long groupId, @RequestParam String memo, Authentication auth){
+        GroupMemo updatedMemo = groupMemoService.editMemo(groupId, memo, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
@@ -44,9 +44,9 @@ public class GroupMemoController {
     }
 
     @DeleteMapping("/checklists/memos")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long memo_id, Authentication auth) {
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam("memo_id") Long memoId, Authentication auth) {
 
-        groupMemoService.deleteMemo(memo_id, auth);
+        groupMemoService.deleteMemo(memoId, auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);

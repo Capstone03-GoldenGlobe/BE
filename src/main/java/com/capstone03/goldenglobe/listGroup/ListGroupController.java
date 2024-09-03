@@ -21,8 +21,8 @@ public class ListGroupController {
     private final ListGroupRepository listGroupRepository;
 
     @PostMapping("/checklists/{list_id}/groups")
-    public ResponseEntity<Map<String, Object>> postGroup(@PathVariable Long list_id, @RequestParam String group_name, Authentication auth) {
-        ListGroup listGroup = listGroupService.makeGroup(list_id,group_name, auth);
+    public ResponseEntity<Map<String, Object>> postGroup(@PathVariable("list_id") Long listId, @RequestParam("group_name") String groupName, Authentication auth) {
+        ListGroup listGroup = listGroupService.makeGroup(listId,groupName, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
@@ -36,8 +36,8 @@ public class ListGroupController {
     }
 
     @PutMapping("/checklists/groups/{group_id}")
-    public ResponseEntity<Map<String, Object>> editGroupName(@PathVariable Long group_id, @RequestParam String group_name, Authentication auth){
-        ListGroup updatedGroup = listGroupService.editGroupName(group_id, group_name, auth);
+    public ResponseEntity<Map<String, Object>> editGroupName(@PathVariable("group_id") Long groupId, @RequestParam("group_name") String groupName, Authentication auth){
+        ListGroup updatedGroup = listGroupService.editGroupName(groupId, groupName, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
@@ -50,8 +50,8 @@ public class ListGroupController {
     }
 
     @DeleteMapping("/checklists/groups")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long group_id,Authentication auth) {
-        listGroupService.deleteGroup(group_id, auth);
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam("group_id") Long groupId,Authentication auth) {
+        listGroupService.deleteGroup(groupId, auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
