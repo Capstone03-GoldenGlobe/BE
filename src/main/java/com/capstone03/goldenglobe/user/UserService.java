@@ -9,10 +9,12 @@ import java.util.Optional;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final JwtBlacklistService jwtBlacklistService;
 
   @Autowired
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, JwtBlacklistService jwtBlacklistService) {
     this.userRepository = userRepository;
+    this.jwtBlacklistService = jwtBlacklistService;
   }
 
   // 사용자 저장
@@ -63,5 +65,10 @@ public class UserService {
       user.setRefreshToken(refreshToken); // 리프레시 토큰 설정
       userRepository.save(user); // 업데이트된 사용자 정보 저장
     }
+  }
+
+  // JWT 토큰을 블랙리스트에 추가
+  public void blacklistToken(String token) {
+    jwtBlacklistService.addToBlacklist(token);
   }
 }
