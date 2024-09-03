@@ -11,17 +11,17 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 public class ListGroupDTO {
-
+    private Long list_id;
     private Long group_id;
     private String group_name;
-    private Long list_id;
+
 
     // 생성자
     public static ListGroupDTO fromEntity(ListGroup listGroup) {
         return new ListGroupDTO(
+                listGroup.getList().getListId(),
                 listGroup.getGroupId(),
-                listGroup.getGroupName(),
-                listGroup.getList().getListId()
+                listGroup.getGroupName()
         );
     }
 }
