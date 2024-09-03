@@ -19,8 +19,8 @@ public class GroupMemoService {
     private final ListGroupRepository listGroupRepository;
     private final CheckListAuthCheck authCheck;
 
-    public GroupMemo makeMemo(Long group_id, String memo, Authentication auth){
-        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(group_id,auth);
+    public GroupMemo makeMemo(Long groupId, String memo, Authentication auth){
+        ListGroup listGroup = authCheck.findAndCheckAccessToGroup(groupId,auth);
         try {
             GroupMemo groupMemo = new GroupMemo();
             groupMemo.setGroup(listGroup);
@@ -33,9 +33,9 @@ public class GroupMemoService {
         }
     }
 
-    public GroupMemo editMemo(Long group_id, String memo, Authentication auth){
-        authCheck.findAndCheckAccessToGroup(group_id,auth);
-        Optional<GroupMemo> item = groupMemoRepository.findByGroup_GroupId(group_id);
+    public GroupMemo editMemo(Long groupId, String memo, Authentication auth){
+        authCheck.findAndCheckAccessToGroup(groupId,auth);
+        Optional<GroupMemo> item = groupMemoRepository.findByGroup_GroupId(groupId);
         if (item.isPresent()) {
             GroupMemo groupMemo = item.get();
             groupMemo.setMemo(memo);
@@ -45,9 +45,9 @@ public class GroupMemoService {
         }
     }
 
-    public void deleteMemo(Long memo_id, Authentication auth) {
+    public void deleteMemo(Long memoId, Authentication auth) {
         // 메모 조회 및 존재하지 않을 경우 예외 처리
-        GroupMemo groupMemo = groupMemoRepository.findById(memo_id)
+        GroupMemo groupMemo = groupMemoRepository.findById(memoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 memo_id가 없음"));
 
         // ListGroup 조회
@@ -59,6 +59,6 @@ public class GroupMemoService {
         }
 
         // 메모 삭제
-        groupMemoRepository.deleteById(memo_id);
+        groupMemoRepository.deleteById(memoId);
     }
 }

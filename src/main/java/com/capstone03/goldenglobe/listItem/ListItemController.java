@@ -20,9 +20,9 @@ public class ListItemController {
 
 
     @PostMapping("/checklists/{list_id}/{group_id}/items")
-    public ResponseEntity<Map<String, Object>> postItem(@PathVariable Long list_id, @PathVariable Long group_id, @RequestParam String item_name, Authentication auth) {
+    public ResponseEntity<Map<String, Object>> postItem(@PathVariable("list_id") Long listId, @PathVariable("group_id") Long groupId, @RequestParam("item_name") String itemName, Authentication auth) {
 
-        ListItem listItem = listItemService.makeItem(list_id, group_id, item_name, auth);
+        ListItem listItem = listItemService.makeItem(listId, groupId, itemName, auth);
 
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
@@ -36,8 +36,8 @@ public class ListItemController {
     }
 
     @PutMapping("/checklists/items/{item_id}/name")
-    public ResponseEntity<Map<String, Object>> editItemName(@PathVariable Long item_id, @RequestParam String item_name, Authentication auth){
-        ListItem updatedItem = listItemService.editItemName(item_id, item_name,auth);
+    public ResponseEntity<Map<String, Object>> editItemName(@PathVariable("item_id") Long itemId, @RequestParam("item_name") String itemName, Authentication auth){
+        ListItem updatedItem = listItemService.editItemName(itemId, itemName,auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
@@ -50,8 +50,8 @@ public class ListItemController {
     }
 
     @PutMapping("/checklists/items/{item_id}/checked")
-    public ResponseEntity<Map<String, Object>> editItemChecked(@PathVariable Long item_id, Authentication auth){
-        ListItem updatedItem = listItemService.editItemChecked(item_id, auth);
+    public ResponseEntity<Map<String, Object>> editItemChecked(@PathVariable("item_id") Long itemId, Authentication auth){
+        ListItem updatedItem = listItemService.editItemChecked(itemId, auth);
         // 응답 준비
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
@@ -64,8 +64,8 @@ public class ListItemController {
     }
 
     @PutMapping("/checklists/items/{item_id}/groups")
-    public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable Long item_id, @RequestParam Long new_group_id, Authentication auth){
-        ListItem updatedItem = listItemService.editItemGroup(item_id, new_group_id,auth);
+    public ResponseEntity<Map<String, Object>> editItemGroup(@PathVariable("item_id") Long itemId, @RequestParam("new_group_id") Long newGroupId, Authentication auth){
+        ListItem updatedItem = listItemService.editItemGroup(itemId, newGroupId,auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
@@ -78,8 +78,8 @@ public class ListItemController {
     }
 
     @DeleteMapping("/checklists/items")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam Long item_id,Authentication auth) {
-        listItemService.deleteItem(item_id,auth);
+    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam("item_id") Long itemId,Authentication auth) {
+        listItemService.deleteItem(itemId,auth);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", 200);
