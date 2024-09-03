@@ -1,6 +1,7 @@
 package com.capstone03.goldenglobe.groupMemo;
 
 
+import com.capstone03.goldenglobe.listGroup.ListGroupDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -36,11 +37,8 @@ public class GroupMemoController {
         response.put("status", 200);
         response.put("message", "메모 변경 완료");
 
-        Map<String, Object> updated = new HashMap<>();
-        updated.put("group_id",group_id);
-        updated.put("memo_id",updatedMemo.getMemoId());
-        updated.put("memo",updatedMemo.getMemo());
-        response.put("updatedGroup",updated);
+        GroupMemoDTO updated = GroupMemoDTO.fromEntity(updatedMemo);
+        response.put("updatedMemo",updated);
 
         return ResponseEntity.ok(response);
     }
