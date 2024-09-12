@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmsDto {
+public class SmsVerifyDto {
     @NotBlank(message = "휴대폰 번호를 입력해주세요.")
     private String cellPhone;
+
+    @NotBlank(message = "인증번호를 입력해주세요.")
+    private String certificationCode;
 }
