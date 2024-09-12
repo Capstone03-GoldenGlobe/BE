@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +15,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
-    static final SecretKey key =
-        Keys.hmacShaKeyFor(Decoders.BASE64.decode(
-            // application.properties에 넣어서 꺼내쓰도록 변경 필요
-            "thiskeyisneededatlist32textandneedtouseapplicationproperties"
-        ));
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+    private static SecretKey key;
+
+    @PostConstruct
+    private void init() {
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    }
 
     // JWT 액세스 토큰 생성 함수
     public static String createToken(Authentication auth) {
