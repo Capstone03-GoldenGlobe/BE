@@ -26,6 +26,9 @@ public class GroupMemoController {
         response.put("status", 200);
         response.put("message", "메모 입력완료");
 
+        GroupMemoDTO toDto = GroupMemoDTO.fromEntity(groupMemo);
+        response.put("memo",toDto);
+
         return ResponseEntity.ok(response);
     }
 
