@@ -44,7 +44,7 @@ public class ListGroupController {
         response.put("message", "그룹 이름 변경 성공");
 
         ListGroupDTO updated = ListGroupDTO.fromEntity(updatedGroup);
-        response.put("updatedGroup",updated);
+        response.put("group",updated);
 
         return ResponseEntity.ok(response);
     }

@@ -27,10 +27,10 @@ public class ProfileService {
     private final AmazonS3 amazonS3;
     private final UserRepository userRepository;
 
-    public String getPresignedUrl(Authentication auth){
+    public ProfileDto getPresignedUrl(Authentication auth){
         CustomUser customUser = (CustomUser) auth.getPrincipal();
 
-        String fileName = "profile/"+customUser.getId()+".jpg";
+        String fileName = "profile/"+customUser.getId()+"_"+UUID.randomUUID().toString()+".jpg";
 
         // url 만료시간 설정
         Date expiration = new Date();
@@ -47,10 +47,15 @@ public class ProfileService {
         String presignedUrl = String.valueOf(amazonS3.generatePresignedUrl(generatePresignedUrlRequest));
 
         Optional<User> user = userRepository.findById(customUser.getId());
+        if (user.isPresent()) {
+            user.get().setProfile(fileName);
+            userRepository.save(user.get());
+        } else {
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
 
-        user.get().setProfile(fileName);
-        userRepository.save(user.get());
-        return presignedUrl;
+        String profileUrl = "https://"+bucket+".s3.ap-northeast-2.amazonaws.com/"+fileName;
+        return new ProfileDto(presignedUrl, profileUrl);
     }
 
     public String getProfileUrl(Authentication auth){
@@ -59,17 +64,24 @@ public class ProfileService {
         return amazonS3.getUrl(bucket,user.get().getProfile()).toString();
     }
 
-    public void uploadProfileImage(Authentication auth, MultipartFile file) throws IOException {
+    public ProfileDto uploadProfileImage(Authentication auth, MultipartFile file) throws IOException {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
-        String fileName = "profile/" + customUser.getId() + ".jpg";
+        String fileName = "profile/" + customUser.getId()+"_"+UUID.randomUUID().toString()+".jpg";
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
 
+        // 파일 업로드
         amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
 
         Optional<User> user = userRepository.findById(customUser.getId());
-        user.get().setProfile(fileName);
-        userRepository.save(user.get());
+        if (user.isPresent()) {
+            user.get().setProfile(fileName);
+            userRepository.save(user.get());
+        } else {
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+        String profileUrl = "https://"+bucket+".s3.ap-northeast-2.amazonaws.com/"+fileName;
+        return new ProfileDto(null,profileUrl);
     }
 }
