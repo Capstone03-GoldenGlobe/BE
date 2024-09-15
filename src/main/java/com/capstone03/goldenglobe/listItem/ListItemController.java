@@ -44,7 +44,7 @@ public class ListItemController {
         response.put("message", "항목 변경 완료");
 
         ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
-        response.put("updatedItem", updated);
+        response.put("item", updated);
 
         return ResponseEntity.ok(response);
     }
@@ -58,7 +58,7 @@ public class ListItemController {
         response.put("message", "체크/체크해제 변경 완료");
 
         ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
-        response.put("updatedItem", updated);
+        response.put("item", updated);
 
         return ResponseEntity.ok(response);
     }
@@ -72,7 +72,7 @@ public class ListItemController {
         response.put("message", "그룹 변경 완료");
 
         ListItemDTO updated = ListItemDTO.fromEntity(updatedItem);
-        response.put("updatedItem", updated);
+        response.put("item", updated);
 
         return ResponseEntity.ok(response);
     }

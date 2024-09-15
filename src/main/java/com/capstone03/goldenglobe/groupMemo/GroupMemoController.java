@@ -41,7 +41,7 @@ public class GroupMemoController {
         response.put("message", "메모 변경 완료");
 
         GroupMemoDTO updated = GroupMemoDTO.fromEntity(updatedMemo);
-        response.put("updatedMemo",updated);
+        response.put("memo",updated);
 
         return ResponseEntity.ok(response);
     }
