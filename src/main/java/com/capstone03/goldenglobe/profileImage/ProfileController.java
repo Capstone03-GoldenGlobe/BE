@@ -20,9 +20,9 @@ public class ProfileController {
 
     // Presigned URL 생성
     @PostMapping("/users/profile/url")
-    public ResponseEntity<String> updateProfile(Authentication auth){
-        String presignedUrl = profileService.getPresignedUrl(auth);
-        return ResponseEntity.ok(presignedUrl);
+    public ResponseEntity<ProfileDto> updateProfile(Authentication auth){
+        ProfileDto response = profileService.getPresignedUrl(auth);
+        return ResponseEntity.ok(response);
     }
 
     // 이미지 조회
@@ -34,14 +34,14 @@ public class ProfileController {
 
     // S3 직접 업로드
     @PostMapping("/users/profile/image")
-    public ResponseEntity<String> uploadProfileImage(Authentication auth,
+    public ResponseEntity<?> uploadProfileImage(Authentication auth,
                                                      @RequestParam("file") MultipartFile file) {
         try {
-            profileService.uploadProfileImage(auth, file);
-            return ResponseEntity.ok("Profile image uploaded successfully");
+            ProfileDto response = profileService.uploadProfileImage(auth, file);
+            return ResponseEntity.ok(response);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload profile image");
+                    .body("업로드 실패");
         }
     }
 }
