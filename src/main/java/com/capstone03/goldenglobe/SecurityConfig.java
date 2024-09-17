@@ -35,6 +35,14 @@ public class SecurityConfig {
         return repository;
     }
 
+    private static final String[] SWAGGER_WHITELIST = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "/webjars/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -42,6 +50,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(new JwtFilter(), ExceptionTranslationFilter.class)
             .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(SWAGGER_WHITELIST).permitAll() // Swagger UI 접근 허용
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").hasRole("USER")
                 .requestMatchers("/**").permitAll()
