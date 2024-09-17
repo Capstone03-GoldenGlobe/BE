@@ -46,7 +46,7 @@ public class GroupMemoService {
         }
     }
 
-    // 삭제가 제대로 작동 x
+    @Transactional
     public void deleteMemo(Long memoId, Authentication auth) {
         // 메모 조회 및 존재하지 않을 경우 예외 처리
         GroupMemo groupMemo = groupMemoRepository.findById(memoId)
@@ -59,6 +59,7 @@ public class GroupMemoService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
         }
         // 메모 삭제
-        groupMemoRepository.deleteById(memoId);
+        groupMemoRepository.delete(groupMemo); // 엔티티 삭제
+        listGroup.setGroupMemo(null);
     }
 }
