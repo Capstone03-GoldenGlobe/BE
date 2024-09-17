@@ -24,49 +24,77 @@ public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실
                                     HttpServletResponse response,
                                     FilterChain filterChain
     ) throws ServletException, IOException {
-        // 1. jwt 이름의 쿠키가 있으면 꺼내서
+        // 1. Authorization 헤더에서 JWT 추출 => 없으면 쿠키에서 추출 (for swagger)
+        String authHeader = request.getHeader("Authorization");
+        String jwtToken = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwtToken = authHeader.substring(7);
+        } else { //쿠키에서 JWT 추출
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("jwt".equals(cookie.getName())) {
+                        jwtToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        /*
+        // 아래 2가지 방식 중 하나 선택하기 !
+        // 1. Authorization 헤더에 토큰 저장
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response); // Authorization 헤더가 없으면 통과
+            return;
+        }
+        String jwtToken = authHeader.substring(7); // "Bearer "를 제거하여 토큰만 추출
+
+         // 2. 쿠키에 토큰 저장
         Cookie[] cookies = request.getCookies();
         if(cookies==null){ // 통과하기
             filterChain.doFilter(request, response); // 다음필터실행
             return;
         }
-        var jwtCookie = "";
+        String jwtToken = "";
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("jwt")) {
-                jwtCookie = cookie.getValue(); // jwt 쿠키를 가져옴
+                jwtToken = cookie.getValue(); // jwt 쿠키를 가져옴
             }
         }
+        */
 
         // 2. 유효기간, 위조여부 확인해보고
-        Claims claim;
+        Claims claims;
         try{ // 에러가 날 수 있으므로 try, catch 안에 써줌
-            claim = JwtUtil.extractToken(jwtCookie);
+            claims = JwtUtil.extractToken(jwtToken);
         } catch (Exception e) {
             filterChain.doFilter(request, response); // 다음필터실행
             return;
         }
 
-        System.out.println("Claims: " + claim);
+        System.out.println("Claims: " + claims);
 
         // 3. 문제없으면 auth 변수에 유저정보 입력
-        var arr = claim.get("authorities").toString().split(","); // 권한들을 list에 담아서 넘겨 줌
-        var authorities = Arrays.stream(arr).map(a -> new SimpleGrantedAuthority(a)).toList(); // 권한들은 SimpleGrantedAuthority안에 넣어야 함. 넣고 toList()로 리스트 변환
+        var authorities = Arrays.stream(claims.get("authorities").toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .toList();
 
         var customUser = new CustomUser(
-                claim.get("cellphone").toString(),
+                claims.get("cellphone").toString(),
                 "none",
                 authorities
         );
-        customUser.setId(((Number) claim.get("id")).longValue()); // id 설정
-        customUser.setName(claim.get("name").toString()); // name 설정
-//        customUser.setEmail(claim.get("email").toString());
+        customUser.setId(((Number) claims.get("id")).longValue()); // id 설정
+        customUser.setName(claims.get("name").toString()); // name 설정
 
         var authToken = new UsernamePasswordAuthenticationToken(
                 customUser, null, authorities
         );
         authToken.setDetails(new WebAuthenticationDetailsSource()
                 .buildDetails(request)); //auth 변수를 좀 더 잘 쓸 수 있게 만들어줌
-        SecurityContextHolder.getContext().setAuthentication(authToken); //auth 변수에 맘대로 유저정보 추가 가능
+        SecurityContextHolder.getContext().setAuthentication(authToken); //auth 변수를 좀 더 잘 쓸 수 있게 만들어줌
 
         filterChain.doFilter(request, response);
     }
