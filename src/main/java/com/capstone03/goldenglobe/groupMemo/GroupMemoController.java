@@ -2,6 +2,8 @@ package com.capstone03.goldenglobe.groupMemo;
 
 
 import com.capstone03.goldenglobe.listGroup.ListGroupDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,11 +15,13 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@Tag(name="GroupMemo",description = "그룹 메모  API")
 public class GroupMemoController {
 
     private final GroupMemoService groupMemoService;
     private final GroupMemoRepository groupMemoRepository;
     @PostMapping("/checklists/{group_id}/memos")
+    @Operation(summary = "메모 생성",description = "그룹Id를 이용해 메모 생성")
     public ResponseEntity<Map<String, Object>> postMemo(@PathVariable("group_id") Long groupId, @RequestParam String memo, Authentication auth) {
         GroupMemo groupMemo = groupMemoService.makeMemo(groupId,memo, auth);
 
@@ -33,6 +37,7 @@ public class GroupMemoController {
     }
 
     @PutMapping("/checklists/{group_id}/memos")
+    @Operation(summary = "메모 수정",description = "그룹Id로 메모 내용 수정")
     public ResponseEntity<Map<String, Object>> editMemo(@PathVariable("group_id") Long groupId, @RequestParam String memo, Authentication auth){
         GroupMemo updatedMemo = groupMemoService.editMemo(groupId, memo, auth);
         // 응답 준비
@@ -47,6 +52,7 @@ public class GroupMemoController {
     }
 
     @DeleteMapping("/checklists/memos")
+    @Operation(summary = "메모 삭제",description = "메모Id로 메모 삭제")
     public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam("memo_id") Long memoId, Authentication auth) {
 
         groupMemoService.deleteMemo(memoId, auth);
