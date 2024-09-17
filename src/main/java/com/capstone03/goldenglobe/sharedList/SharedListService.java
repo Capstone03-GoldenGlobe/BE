@@ -30,7 +30,7 @@ public class SharedListService {
         sharedList.setList(checkList);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 user_id가 없음"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 user_id가 없음"));
         sharedList.setUser(user);
 
         return sharedListRepository.save(sharedList);
