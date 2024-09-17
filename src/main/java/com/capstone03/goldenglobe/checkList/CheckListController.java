@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Controller
 @RequiredArgsConstructor
 @Tag(name="CheckList",description = "체크리스트  API")
@@ -31,9 +28,9 @@ public class CheckListController {
 
     @GetMapping("/checklists/{dest_id}")
     @Operation(summary = "체크리스트 조회",description = "주어진 목적지Id에 대한 체크리스트 전체 조회(그룹, 메모, 항목)")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getCheckList(@PathVariable("dest_id") Long dest_id,Authentication auth) {
-        Map<String, Object> data = checkListService.getCheckListDetails(dest_id,auth);
-        ApiResponse<Map<String, Object>> response = new ApiResponse<>(200, "체크리스트 조회 성공", data);
+    public ResponseEntity<ApiResponse<CheckListResponseDTO>> getCheckList(@PathVariable("dest_id") Long dest_id, Authentication auth) {
+        CheckListResponseDTO toDto = checkListService.getCheckListDetails(dest_id,auth);
+        ApiResponse<CheckListResponseDTO> response = new ApiResponse<>(200, "체크리스트 조회 성공", toDto);
         return ResponseEntity.ok(response);
     }
 }
