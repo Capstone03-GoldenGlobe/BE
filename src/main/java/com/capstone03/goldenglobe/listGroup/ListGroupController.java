@@ -1,5 +1,6 @@
 package com.capstone03.goldenglobe.listGroup;
 
+import com.capstone03.goldenglobe.ApiResponse;
 import com.capstone03.goldenglobe.listItem.ListItemDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,44 +26,27 @@ public class ListGroupController {
 
     @PostMapping("/checklists/{list_id}/groups")
     @Operation(summary="그룹 생성", description = "체크리스트Id에 속하는 그룹 생성")
-    public ResponseEntity<Map<String, Object>> postGroup(@PathVariable("list_id") Long listId, @RequestParam("group_name") String groupName, Authentication auth) {
+    public ResponseEntity<ApiResponse<ListGroupDTO>> postGroup(@PathVariable("list_id") Long listId, @RequestParam("group_name") String groupName, Authentication auth) {
         ListGroup listGroup = listGroupService.makeGroup(listId,groupName, auth);
-
-        // 응답 준비
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
-        response.put("message", "그룹 추가 성공");
-
         ListGroupDTO toDto = ListGroupDTO.fromEntity(listGroup);
-        response.put("group",toDto);
-
+        ApiResponse<ListGroupDTO> response = new ApiResponse<>(200,"그룹 생성 성공",toDto);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/checklists/groups/{group_id}")
     @Operation(summary = "그룹 이름 수정",description = "그룹Id로 그룹 이름 수정")
-    public ResponseEntity<Map<String, Object>> editGroupName(@PathVariable("group_id") Long groupId, @RequestParam("group_name") String groupName, Authentication auth){
+    public ResponseEntity<ApiResponse<ListGroupDTO>> editGroupName(@PathVariable("group_id") Long groupId, @RequestParam("group_name") String groupName, Authentication auth){
         ListGroup updatedGroup = listGroupService.editGroupName(groupId, groupName, auth);
-        // 응답 준비
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
-        response.put("message", "그룹 이름 변경 성공");
-
-        ListGroupDTO updated = ListGroupDTO.fromEntity(updatedGroup);
-        response.put("group",updated);
-
+        ListGroupDTO toDto = ListGroupDTO.fromEntity(updatedGroup);
+        ApiResponse<ListGroupDTO> response = new ApiResponse<>(200,"그룹 이름 변경 성공",toDto);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/checklists/groups")
     @Operation(summary = "그룹 삭제",description = "그룹Id로 그룹 삭제")
-    public ResponseEntity<Map<String, Object>> deleteItem(@RequestParam("group_id") Long groupId,Authentication auth) {
+    public ResponseEntity<ApiResponse<Void>> deleteItem(@RequestParam("group_id") Long groupId,Authentication auth) {
         listGroupService.deleteGroup(groupId, auth);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
-        response.put("message", "그룹 삭제 완료 (그룹 메모, 아이템 포함)");
-
+        ApiResponse<Void> response = new ApiResponse<>(200, "그룹 삭제 완료(메모, 항목 포함)", null);
         return ResponseEntity.ok(response);
     }
 }

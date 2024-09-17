@@ -29,7 +29,7 @@ public class GroupMemoService {
             return groupMemoRepository.save(groupMemo);
         } catch (DataIntegrityViolationException e) { // 무결성 위반 -> 중복된 그룹에 메모 추가하려고 할 때
             // DuplicateKeyException e 유니크 제약 조건 위반
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "데이터 무결성 위반", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "데이터 무결성 위반: " +e.getMessage());
         }
     }
 
@@ -41,7 +41,7 @@ public class GroupMemoService {
             groupMemo.setMemo(memo);
             return groupMemoRepository.save(groupMemo);
         } else {
-            throw new IllegalArgumentException("해당 group_id로 메모를 찾을 수 없습니다. 메모를 먼저 생성해주세요");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 group_id로 메모를 찾을 수 없습니다. 메모를 먼저 생성해주세요");
         }
     }
 

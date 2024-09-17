@@ -3,7 +3,6 @@ package com.capstone03.goldenglobe.listItem;
 import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
-import com.capstone03.goldenglobe.groupMemo.GroupMemo;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
 import com.capstone03.goldenglobe.user.CustomUser;
@@ -31,7 +30,7 @@ public class ListItemService {
 
         // 일치하는 체크리스트가 있는지 확인
         CheckList checkList = checkListRepository.findById(listId)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 list_id가 없음"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 list_id가 없음"));
 
         // 일치하는 그룹이 있는지 확인
         ListGroup listGroup = authCheck.findAndCheckAccessToGroup(groupId,auth);
@@ -56,7 +55,7 @@ public class ListItemService {
         listItem.setChecked(!listItem.isChecked());
          if(listItem.isChecked()){ // true
              CustomUser customUser = (CustomUser) auth.getPrincipal();
-             var userPhone = customUser.getCellphone();
+             String userPhone = customUser.getCellphone();
              User user = userRepository.findByCellphone(userPhone)
                      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
@@ -75,7 +74,7 @@ public class ListItemService {
             listItem.setGroup(group.get());
             return listItemRepository.save(listItem);
         } else {
-            throw new IllegalArgumentException("일치하는 group_id가 없음");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 group_id가 없음");
         }
     }
 
