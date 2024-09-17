@@ -55,7 +55,7 @@ public class CheckListService {
 
         CheckList checkList = optionalCheckList.get();
 
-        // 유저 권한 확인 절차
+        // 유저 권한 확인 절차 >> 수정 필요!!!!
         if (!authCheck.hasAccessToCheckList(checkList.getListId(), auth)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
         }

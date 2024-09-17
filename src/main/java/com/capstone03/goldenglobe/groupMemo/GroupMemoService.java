@@ -3,6 +3,7 @@ package com.capstone03.goldenglobe.groupMemo;
 import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.listGroup.ListGroupRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,7 @@ public class GroupMemoService {
         }
     }
 
+    // 삭제가 제대로 작동 x
     public void deleteMemo(Long memoId, Authentication auth) {
         // 메모 조회 및 존재하지 않을 경우 예외 처리
         GroupMemo groupMemo = groupMemoRepository.findById(memoId)
@@ -52,12 +54,10 @@ public class GroupMemoService {
 
         // ListGroup 조회
         ListGroup listGroup = groupMemo.getGroup();
-
         // 유저 권한 확인 절차
         if (!authCheck.hasAccessToCheckList(listGroup.getList().getListId(), auth)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
         }
-
         // 메모 삭제
         groupMemoRepository.deleteById(memoId);
     }

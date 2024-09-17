@@ -51,6 +51,7 @@ public class ListItemController {
         return ResponseEntity.ok(response);
     }
 
+    // 체크리스트 내 그룹 Id인지 확인 필요!!!
     @PutMapping("/checklists/items/{item_id}/groups")
     @Operation(summary = "항목 그룹 변경",description = "항목Id와 새 그룹Id로 항목의 그룹을 변경")
     public ResponseEntity<ApiResponse<ListItemDTO>> editItemGroup(@PathVariable("item_id") Long itemId, @RequestParam("new_group_id") Long newGroupId, Authentication auth){
