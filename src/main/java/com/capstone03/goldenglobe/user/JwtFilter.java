@@ -28,64 +28,67 @@ public class JwtFilter extends OncePerRequestFilter { // 요청마다 1회만 �
                                     HttpServletResponse response,
                                     FilterChain filterChain
     ) throws ServletException, IOException {
-        // 1. jwt 이름의 쿠키가 있으면 꺼내서
-        Cookie[] cookies = request.getCookies();
-        if(cookies == null){ // 통과하기
-            filterChain.doFilter(request, response); // 다음 필터 실행
-            return;
-        }
-
-        String jwtCookie = null;
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("jwt")) {
-                jwtCookie = cookie.getValue(); // jwt 쿠키를 가져옴
-                break;
+        // 1. Authorization 헤더에서 JWT 추출 => 없으면 쿠키에서 추출
+        String authHeader = request.getHeader("Authorization");
+        String jwtToken = null;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwtToken = authHeader.substring(7);
+        } else { // 쿠키에서 JWT 추출
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("jwt".equals(cookie.getName())) {
+                        jwtToken = cookie.getValue();
+                        break;
+                    }
+                }
             }
         }
 
-        if (jwtCookie == null) {
-            filterChain.doFilter(request, response); // JWT 쿠키가 없으면 통과
+        // JWT 토큰이 없으면 필터 통과
+        if (jwtToken == null) {
+            filterChain.doFilter(request, response);
             return;
         }
 
         // 2. 블랙리스트에 있는지 확인
-        if (userService.isTokenBlacklisted(jwtCookie)) {
+        if (userService.isTokenBlacklisted(jwtToken)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("블랙리스트에 등록된 토큰입니다.");
             return; // 더 이상 진행하지 않고 종료
         }
 
-        // 3. 유효기간, 위조여부 확인해보고
-        Claims claim;
-        try { // 에러가 날 수 있으므로 try-catch
-            claim = JwtUtil.extractToken(jwtCookie);
+        // 3. 유효기간, 위조여부 확인
+        Claims claims;
+        try {
+            claims = JwtUtil.extractToken(jwtToken);
         } catch (Exception e) {
-            filterChain.doFilter(request, response); // 다음 필터 실행
+            filterChain.doFilter(request, response);
             return;
         }
 
-        System.out.println("Claims: " + claim);
+        System.out.println("Claims: " + claims);
 
         // 4. 문제없으면 auth 변수에 유저정보 입력
-        var arr = claim.get("authorities").toString().split(","); // 권한들을 리스트에 담음
-        var authorities = Arrays.stream(arr).map(a -> new SimpleGrantedAuthority(a)).toList(); // 권한 설정
+        var authorities = Arrays.stream(claims.get("authorities").toString().split(","))
+            .map(SimpleGrantedAuthority::new)
+            .toList();
 
         var customUser = new CustomUser(
-            claim.get("cellphone").toString(),
+            claims.get("cellphone").toString(),
             "none",
             authorities
         );
-        customUser.setId(((Number) claim.get("id")).longValue()); // id 설정
-        customUser.setName(claim.get("name").toString()); // name 설정
+        customUser.setId(((Number) claims.get("id")).longValue()); // id 설정
+        customUser.setName(claims.get("name").toString()); // name 설정
 
-        var authToken = new UsernamePasswordAuthenticationToken(
-            customUser, null, authorities
-        );
+        var authToken = new UsernamePasswordAuthenticationToken(customUser, null, authorities);
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken); // 유저정보 추가
 
         filterChain.doFilter(request, response); // 다음 필터 실행
     }
+
 }
 
 
