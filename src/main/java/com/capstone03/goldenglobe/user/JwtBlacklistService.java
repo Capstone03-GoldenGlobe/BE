@@ -15,7 +15,7 @@ public class JwtBlacklistService {
   }
 
   // 블랙리스트에서 토큰 확인
-  public boolean isTokenBlacklisted(String token) {
+  public boolean isBlacklisted(String token) {
     return blacklistedTokens.contains(token);
   }
 }
