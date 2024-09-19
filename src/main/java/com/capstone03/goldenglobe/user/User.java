@@ -33,7 +33,7 @@ public class User {
   @Column(name = "nickname", length = 10)
   private String nickname;
 
-  @Column(name = "profile", length = 30)
+  @Column(name = "profile")
   private String profile;
 
   @Column(name = "gender", length = 10)
