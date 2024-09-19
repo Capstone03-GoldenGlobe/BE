@@ -43,18 +43,18 @@ public class UserService {
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       String temporaryPassword = generateTemporaryPassword();
-      user.setPassword(temporaryPassword); // 일단임시 - 실제로 암호화되어야 함
+      user.setPassword(temporaryPassword); // 일단 임시 - 실제로 암호화되어야 함
       saveUser(user);
       // SMS 전송 로직 추가 가능
-      return "Password reset instructions sent to your phone";
+      return "초기화된 비밀번호가 휴대폰으로 전송되었습니다.";
     }
-    return "User not found";
+    return "사용자가 존재하지 않습니다.";
   }
 
   // 임시 비밀번호 생성
   private String generateTemporaryPassword() {
-    // 일단임시 - 비밀번호 생성하는 로직 구현하기
-    return "temporaryPassword123";
+    // 일단 임시 - 비밀번호 생성하는 로직 구현하기
+    return "temppw123";
   }
 
   // 리프레시 토큰 업데이트
@@ -71,4 +71,10 @@ public class UserService {
   public void blacklistToken(String token) {
     jwtBlacklistService.addToBlacklist(token);
   }
+
+  // JWT 토큰이 블랙리스트에 있는지 확인
+  public boolean isTokenBlacklisted(String token) {
+    return jwtBlacklistService.isBlacklisted(token);
+  }
 }
+

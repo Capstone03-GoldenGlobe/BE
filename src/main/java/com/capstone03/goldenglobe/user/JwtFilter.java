@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +18,10 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실행되도록 extends
+public class JwtFilter extends OncePerRequestFilter { // 요청마다 1회만 실행되도록 extends
+
+    @Autowired
+    private UserService userService; // 블랙리스트 검사를 위한 서비스 주입
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -41,6 +45,17 @@ public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실
             }
         }
 
+        // JWT 토큰이 없으면 필터 통과
+        if (jwtToken == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 2. 블랙리스트에 있는지 확인
+        if (userService.isTokenBlacklisted(jwtToken)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("블랙리스트에 등록된 토큰입니다.");
+            return; // 더 이상 진행하지 않고 종료
         /*
         // 아래 2가지 방식 중 하나 선택하기 !
         // 1. Authorization 헤더에 토큰 저장
@@ -70,7 +85,7 @@ public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실
         try{ // 에러가 날 수 있으므로 try, catch 안에 써줌
             claims = JwtUtil.extractToken(jwtToken);
         } catch (Exception e) {
-            filterChain.doFilter(request, response); // 다음필터실행
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -96,7 +111,9 @@ public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실
                 .buildDetails(request)); //auth 변수를 좀 더 잘 쓸 수 있게 만들어줌
         SecurityContextHolder.getContext().setAuthentication(authToken); //auth 변수를 좀 더 잘 쓸 수 있게 만들어줌
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response); // 다음 필터 실행
     }
+
 }
+
 

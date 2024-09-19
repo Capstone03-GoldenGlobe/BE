@@ -125,10 +125,10 @@ public class UserController {
       refreshTokenCookie.setPath("/");
       response.addCookie(refreshTokenCookie);
 
-      return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
+      return new ResponseEntity<>("로그아웃 성공!", HttpStatus.OK);
     }
 
-    return new ResponseEntity<>("No token found", HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>("토큰을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
   }
 
   // 사용자 정보 조회
