@@ -10,9 +10,11 @@ import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.Date;
@@ -34,9 +36,7 @@ public class ProfileService {
 
         // url 만료시간 설정
         Date expiration = new Date();
-        long expTime = expiration.getTime();
-        expTime += 1000*60*5 ; // 5분 후 만료
-        expiration.setTime(expTime);
+        expiration.setTime(expiration.getTime() + 1000*60*5); // 5분 후 만료
 
         // presigned URL 생성
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
@@ -51,7 +51,7 @@ public class ProfileService {
             user.get().setProfile(fileName);
             userRepository.save(user.get());
         } else {
-            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
         }
 
         String profileUrl = "https://"+bucket+".s3.ap-northeast-2.amazonaws.com/"+fileName;
@@ -79,7 +79,7 @@ public class ProfileService {
             user.get().setProfile(fileName);
             userRepository.save(user.get());
         } else {
-            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
         }
         String profileUrl = "https://"+bucket+".s3.ap-northeast-2.amazonaws.com/"+fileName;
         return new ProfileDto(null,profileUrl);
