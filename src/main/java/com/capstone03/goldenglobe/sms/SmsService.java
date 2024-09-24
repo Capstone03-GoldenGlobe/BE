@@ -44,9 +44,10 @@ public class SmsService {
         // Redis에서 저장된 인증번호 가져오기
         String storedCode = redisTemplate.opsForValue().get(to);
 
-        // 저장된 인증번호가 없거나 일치하지 않으면 false 반환
-        if (storedCode == null || !storedCode.equals(inputCode)) {
-            return false;
+        if(storedCode == null){ // 저장된 코드가 없을 겨우
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"DB에서 인증번호를 찾을 수 없습니다.");
+        } else if (!storedCode.equals(inputCode)){ // 인증번호가 일치하지 않을 경우
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"인증번호가 일치하지 않습니다.");
         }
 
         // 인증 성공 시 Redis에서 인증번호 삭제 (optional)
