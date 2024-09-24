@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/sms")
@@ -28,12 +31,14 @@ public class SmsController {
 
     @PostMapping("/verify")
     @Operation(summary = "인증번호 확인",description = "휴대폰 번호와 인증번호가 맞는지 확인합니다.")
-    public ResponseEntity<ApiResponseSetting<Void>> verifySMS(@RequestBody @Valid SmsVerifyDto smsVerifyDto){
+    public ResponseEntity<ApiResponseSetting<?>> verifySMS(@RequestBody @Valid SmsVerifyDto smsVerifyDto){
         boolean verify = smsService.verifyCode(smsVerifyDto);
         if (verify) {
-            ApiResponseSetting<Void> response = new ApiResponseSetting<>(200, "인증 완료", null);
+            Map<String, String> data = new HashMap<>();
+            data.put("cellPhone", smsVerifyDto.getCellPhone());
+            ApiResponseSetting<Map<String, String>> response = new ApiResponseSetting<>(200, "인증 완료", data);
             return ResponseEntity.ok(response);
-        } else {
+        }  else {
             ApiResponseSetting<Void> response = new ApiResponseSetting<>(400, "인증 실패", null);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
