@@ -83,7 +83,7 @@ public class UserController {
 
       // 7. 헤더에 액세스 토큰 추가
       response.addHeader("Authorization", "Bearer " + jwt);
-
+      tokens.put("Authorization","Bearer "+jwt);
       return new ResponseEntity<>(tokens, HttpStatus.OK);
 
     } catch (BadCredentialsException e) {
