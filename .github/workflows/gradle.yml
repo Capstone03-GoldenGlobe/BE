@@ -27,6 +27,7 @@ jobs:
     # application.properties 설정
     - name: Setting application.properties
       run: | 
+        mkdir -p ./src/main/resources
         touch ./src/main/resources/application.properties
         echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
 
