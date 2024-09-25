@@ -24,6 +24,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    # application.properties 설정
+    - name: Setting application.properties
+      run: | 
+        touch ./src/main/resources/application.properties
+        echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+
     # 2. Spring Boot 애플리케이션 빌드
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
@@ -57,8 +63,3 @@ jobs:
           docker stop goldenglobe-container || true
           docker rm goldenglobe-container || true
           docker run -d --name goldenglobe-container -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/goldenglobe-server
-
-
-
-
-      
