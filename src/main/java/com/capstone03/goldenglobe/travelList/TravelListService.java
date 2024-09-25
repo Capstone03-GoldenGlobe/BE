@@ -11,8 +11,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TravelListService {
 
-  private final TravelListRepository travelListRepository; // final로 수정
-  private final CheckListRepository checkListRepository; // final로 수정
+  private final TravelListRepository travelListRepository;
+  private final CheckListRepository checkListRepository;
 
   public List<TravelList> getTravelList(String country, String city) {
     if (country != null && city != null) {
@@ -32,7 +32,7 @@ public class TravelListService {
   public TravelList createTravelList(TravelList travelList) {
     TravelList savedTravelList = travelListRepository.save(travelList);
 
-    // 체크리스트 자동 생성
+    // 체크리스트 자동 생성되도록
     CheckList checkList = new CheckList();
     checkList.setUser(savedTravelList.getUser());
     checkList.setDest(savedTravelList);
