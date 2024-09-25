@@ -1,6 +1,9 @@
 package com.capstone03.goldenglobe.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +18,16 @@ public class UserService {
   public UserService(UserRepository userRepository, JwtBlacklistService jwtBlacklistService) {
     this.userRepository = userRepository;
     this.jwtBlacklistService = jwtBlacklistService;
+  }
+
+  // 현재 로그인한 사용자 이름 가져오기
+  public String getLoggedInUsername() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+      UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+      return userDetails.getUsername();
+    }
+    return "로그인하세요";
   }
 
   // 사용자 저장
