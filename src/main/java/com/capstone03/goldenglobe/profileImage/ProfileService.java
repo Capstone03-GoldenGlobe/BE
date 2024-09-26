@@ -24,7 +24,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
-    @Value("${spring.cloud.aws.s3.bucket}")
+    @Value("${aws.s3.profile-bucket}")
     private String bucket;
     private final AmazonS3 amazonS3;
     private final UserRepository userRepository;
