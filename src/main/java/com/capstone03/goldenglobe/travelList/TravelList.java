@@ -1,6 +1,7 @@
 package com.capstone03.goldenglobe.travelList;
 
 import com.capstone03.goldenglobe.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class TravelList {
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
+  @JsonIgnore
   private User user;
 
   @Column(name = "country", length = 20)
