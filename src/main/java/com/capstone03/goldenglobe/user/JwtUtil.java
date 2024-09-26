@@ -36,7 +36,7 @@ public class JwtUtil {
             .claim("authorities", authorities)
             .claim("cellphone", user.getCellphone())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1800000)) // 30분
+            .setExpiration(new Date(System.currentTimeMillis() + 10800000)) // 3시간
             .signWith(key)
             .compact();
     }
