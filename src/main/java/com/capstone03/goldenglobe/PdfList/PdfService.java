@@ -56,15 +56,14 @@ public class PdfService {
     // 파일 업로드
     amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
 
-    // 사용자의 PDF 경로를 업데이트하려면 아래 코드를 추가합니다.
+    // 사용자의 PDF 경로를 업데이트
     Optional<User> user = userRepository.findById(customUser.getId());
     if (user.isPresent()) {
-      // 예: user.get().setPdfPath(fileName);  // PDF 경로를 사용자 엔티티에 설정할 경우
       userRepository.save(user.get());
     } else {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
     }
 
-    return "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName; // S3 URL 반환
+    return "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
   }
 }
