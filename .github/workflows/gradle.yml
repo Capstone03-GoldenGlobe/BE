@@ -14,7 +14,7 @@ jobs:
   # 어플리케이션 빌드 - docker hub에 푸시 - EC2 서버 배포
   build-docker-image:
     runs-on: ubuntu-latest
-    if: !contains(github.event.head_commit.message, 'Merge pull request') && !contains(github.event.head_commit.message, '[skip]')
+    if: "!contains(github.event.head_commit.message, 'Merge pull request') && !contains(github.event.head_commit.message, '[skip]')"
     steps:
     - uses: actions/checkout@v4
 
