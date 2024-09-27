@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,22 +20,38 @@ public class PdfController {
 
   private final PdfService pdfService;
 
-  // Presigned URL 생성
-  @PostMapping("/pdf/url")
+  // 챗봇에 presignedUrl 생성 및 파일명 db 저장
+  @PostMapping("/pdf")
   @Operation(summary = "PresignedURL 생성", description = "PresignedURL과 해당 URL을 통해 정상적으로 PDF 업로드 시, PDF를 조회할 수 있는 URL을 반환합니다.")
-  public ResponseEntity<ApiResponseSetting<String>> getPresignedUrl(Authentication auth) {
-    String presignedUrl = pdfService.getPresignedUrl(auth);
+  public ResponseEntity<ApiResponseSetting<String>> getPresignedUrl(@RequestBody PdfUploadDto request, Authentication auth) {
+    String presignedUrl = pdfService.getPresignedUrl(request, auth);
     ApiResponseSetting<String> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "Presigned URL 생성 완료", presignedUrl);
     return ResponseEntity.ok(response);
   }
 
-  // S3 직접 업로드
-  @PostMapping("/pdf/upload")
+  @GetMapping("/pdf/names/{dest_id}")
+  @Operation(summary = "챗봇 PDF 이름 목록 조회", description = "dest_id와 일치하는 모든 PDF URL 반환")
+  public ResponseEntity<ApiResponseSetting<List<String>>> getAllPdfNames(@PathVariable("dest_id") Long destId, Authentication auth){
+    List<String> pdfNames = pdfService.getPdfNames(destId,auth);
+    ApiResponseSetting<List<String>> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "챗봇 PDF 목록(이름) 조회 완료", pdfNames);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/pdf/paths/{dest_id}")
+  @Operation(summary = "챗봇 PDF URL 목록 조회", description = "dest_id와 일치하는 모든 PDF URL 반환")
+  public ResponseEntity<ApiResponseSetting<List<String>>> getAllPdfPaths(@PathVariable("dest_id") Long destId, Authentication auth){
+    List<String> pdfPaths = pdfService.getPdfPaths(destId,auth);
+    ApiResponseSetting<List<String>> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "챗봇 PDF 목록(url) 조회 완료", pdfPaths);
+    return ResponseEntity.ok(response);
+  }
+
+  // PDF 직접 업로드
+  @PostMapping("/pdf/{dest_id}")
   @Operation(summary = "서버에서 PDF 직접 업로드", description = "서버가 프론트에서 PDF 파일을 받아 S3 bucket에 PDF를 업로드합니다.")
   public ResponseEntity<ApiResponseSetting<String>> uploadPdf(Authentication auth,
-                                                              @RequestParam("file") MultipartFile file) {
+                                                              @RequestParam("file") MultipartFile file, @PathVariable("dest_id") Long destId) {
     try {
-      String pdfUrl = pdfService.uploadPdf(auth, file);
+      String pdfUrl = pdfService.uploadPdf(auth, file, destId);
       ApiResponseSetting<String> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "PDF 업로드 성공", pdfUrl);
       return ResponseEntity.ok(response);
     } catch (IOException e) {

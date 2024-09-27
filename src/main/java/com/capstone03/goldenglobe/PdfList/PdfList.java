@@ -12,10 +12,13 @@ public class PdfList {
   private Long pdfId;
 
   @Column(name = "user_id", nullable = false, length = 50)
-  private String userId;
+  private Long userId;
 
   @Column(name = "dest_id", nullable = false, length = 50)
-  private String destId;
+  private Long destId;
+
+  @Column(name="pdf_name")
+  private String pdfName;
 
   @Column(name = "pdf_path")
   private String pdfPath;
