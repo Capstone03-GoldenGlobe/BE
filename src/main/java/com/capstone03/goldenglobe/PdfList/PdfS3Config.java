@@ -20,16 +20,16 @@ public class PdfS3Config {
 
   @Bean
   @Primary
-  public BasicAWSCredentials awsCredentialsProvider() {
-    BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey, secretKey);
-    return basicAWSCredentials;
+  public BasicAWSCredentials awsCredentialsProviderPDF() {
+    BasicAWSCredentials basicAWSCredentialsPDF = new BasicAWSCredentials(accessKey, secretKey);
+    return basicAWSCredentialsPDF;
   }
 
   @Bean
-  public AmazonS3 amazonS3() {
+  public AmazonS3 amazonS3PDF(BasicAWSCredentials awsCredentialsProviderPDF) {
     return AmazonS3ClientBuilder.standard()
-        .withRegion(region)
-        .withCredentials(new AWSStaticCredentialsProvider(awsCredentialsProvider()))
-        .build();
+            .withRegion(region)
+            .withCredentials(new AWSStaticCredentialsProvider(awsCredentialsProviderPDF))
+            .build();
   }
 }
