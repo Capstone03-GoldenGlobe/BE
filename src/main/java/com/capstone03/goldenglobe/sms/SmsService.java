@@ -18,7 +18,7 @@ public class SmsService {
     private final StringRedisTemplate redisTemplate; // Redis 사용
     private static final long EXPIRATION_TIME = 5L; // 유효시간 5분
 
-    public String SendSms(SmsDto smsDto){
+    public String SendSms(SmsDTO smsDto){
         // 이미 가입한 전화번호인지 확인
         String to = smsDto.getCellPhone();
         boolean isExists = userRepository.findByCellphone(to).isPresent();
@@ -37,7 +37,7 @@ public class SmsService {
         return certificationCode;
     }
 
-    public boolean verifyCode(SmsVerifyDto smsVerifyDto){
+    public boolean verifyCode(SmsVerifyDTO smsVerifyDto){
         String to = smsVerifyDto.getCellPhone();
         String inputCode = smsVerifyDto.getCertificationCode();
 

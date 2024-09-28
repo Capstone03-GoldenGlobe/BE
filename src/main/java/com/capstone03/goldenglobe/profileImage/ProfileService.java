@@ -29,7 +29,7 @@ public class ProfileService {
     private final AmazonS3 amazonS3;
     private final UserRepository userRepository;
 
-    public ProfileDto getPresignedUrl(Authentication auth){
+    public ProfileDTO getPresignedUrl(Authentication auth){
         CustomUser customUser = (CustomUser) auth.getPrincipal();
 
         String fileName = "profile/"+customUser.getId()+"_"+UUID.randomUUID().toString()+".jpg";
@@ -55,7 +55,7 @@ public class ProfileService {
         }
 
         String profileUrl = "https://"+bucket+".s3.ap-northeast-2.amazonaws.com/"+fileName;
-        return new ProfileDto(presignedUrl, profileUrl);
+        return new ProfileDTO(presignedUrl, profileUrl);
     }
 
     public String getProfileUrl(Authentication auth){
@@ -64,7 +64,7 @@ public class ProfileService {
         return amazonS3.getUrl(bucket,user.get().getProfile()).toString();
     }
 
-    public ProfileDto uploadProfileImage(Authentication auth, MultipartFile file) throws IOException {
+    public ProfileDTO uploadProfileImage(Authentication auth, MultipartFile file) throws IOException {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         String fileName = "profile/" + customUser.getId()+"_"+UUID.randomUUID().toString()+".jpg";
 
@@ -82,6 +82,6 @@ public class ProfileService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
         }
         String profileUrl = "https://"+bucket+".s3.ap-northeast-2.amazonaws.com/"+fileName;
-        return new ProfileDto(null,profileUrl);
+        return new ProfileDTO(null,profileUrl);
     }
 }

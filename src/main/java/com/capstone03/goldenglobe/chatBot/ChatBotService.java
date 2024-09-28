@@ -15,7 +15,7 @@ public class ChatBotService {
     this.chatBotRepository = chatBotRepository;
   }
 
-  public List<ChatBot> getChatBotsByPlaceId(String placeId) {
+  public List<ChatBot> getChatBotsByPlaceId(Long placeId) {
     return chatBotRepository.findByDestId(placeId);
   }
 
