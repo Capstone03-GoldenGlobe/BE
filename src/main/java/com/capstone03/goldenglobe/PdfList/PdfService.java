@@ -1,6 +1,8 @@
 package com.capstone03.goldenglobe.PdfList;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -117,8 +119,20 @@ public class PdfService {
   }
 
   public void deletePdf(Long pdfId, Authentication auth){
-    pdfListRepository.findById(pdfId)
+    PdfList pdfList = pdfListRepository.findById(pdfId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "PDF를 찾을 수 없습니다."));
+    // bucket 에서 삭제
+    //amazonS3.deleteObject(bucket,pdfList.getPdfPath());
+    try {
+      amazonS3.deleteObject(bucket, pdfList.getPdfPath());
+    } catch (AmazonServiceException e) {
+      // AWS 서비스 오류 처리
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "S3에서 PDF 삭제 실패: " + e.getMessage());
+    } catch (SdkClientException e) {
+      // 클라이언트 오류 처리
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "S3 클라이언트 오류: " + e.getMessage());
+    }
+    // db 삭제
     pdfListRepository.deleteById(pdfId);
   }
 }
