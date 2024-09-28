@@ -18,14 +18,14 @@ public class ChatBotController {
   }
 
   @PostMapping("/{place_id}")
-  public ResponseEntity<ChatBot> createChatBot(@PathVariable("place_id") String placeId, @RequestBody ChatBot chatBot) {
+  public ResponseEntity<ChatBot> createChatBot(@PathVariable("place_id") Long placeId, @RequestBody ChatBot chatBot) {
     chatBot.setDestId(placeId); // place_id를 destId로 설정
     ChatBot createdChatBot = chatBotService.createChatBot(chatBot);
     return ResponseEntity.status(201).body(createdChatBot); // HTTP 201 Created
   }
 
   @GetMapping("/{place_id}/pdflist")
-  public ResponseEntity<List<ChatBot>> getPdfListByPlaceId(@PathVariable("place_id") String placeId) {
+  public ResponseEntity<List<ChatBot>> getPdfListByPlaceId(@PathVariable("place_id") Long placeId) {
     // 나중에 PDF 조회 로직 추가하기
     List<ChatBot> chatBots = chatBotService.getChatBotsByPlaceId(placeId);
     return ResponseEntity.ok(chatBots);

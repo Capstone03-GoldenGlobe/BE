@@ -22,16 +22,16 @@ public class SmsController {
 
     @PostMapping("/send")
     @Operation(summary = "인증번호 전송",description = "전달받은 휴대폰 번호로 인증번호를 전송합니다.")
-    public ResponseEntity<ApiResponseSetting<SmsResponseDto>> SendSMS(@RequestBody @Valid SmsDto smsDto){
+    public ResponseEntity<ApiResponseSetting<SmsResponseDTO>> SendSMS(@RequestBody @Valid SmsDTO smsDto){
         String certificationCode = smsService.SendSms(smsDto);
-        SmsResponseDto responseDto = new SmsResponseDto(smsDto.getCellPhone(), certificationCode);
-        ApiResponseSetting<SmsResponseDto> response = new ApiResponseSetting<>(200, "문자 전송 완료", responseDto);
+        SmsResponseDTO responseDto = new SmsResponseDTO(smsDto.getCellPhone(), certificationCode);
+        ApiResponseSetting<SmsResponseDTO> response = new ApiResponseSetting<>(200, "문자 전송 완료", responseDto);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/verify")
     @Operation(summary = "인증번호 확인",description = "휴대폰 번호와 인증번호가 맞는지 확인합니다.")
-    public ResponseEntity<ApiResponseSetting<?>> verifySMS(@RequestBody @Valid SmsVerifyDto smsVerifyDto){
+    public ResponseEntity<ApiResponseSetting<?>> verifySMS(@RequestBody @Valid SmsVerifyDTO smsVerifyDto){
         boolean verify = smsService.verifyCode(smsVerifyDto);
         if (verify) {
             Map<String, String> data = new HashMap<>();

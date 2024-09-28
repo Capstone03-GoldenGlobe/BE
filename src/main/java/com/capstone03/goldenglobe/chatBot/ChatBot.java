@@ -12,5 +12,5 @@ public class ChatBot {
   private Long chatId;
 
   @Column(name = "dest_id", nullable = false, length = 50)
-  private String destId;
+  private Long destId;
 }

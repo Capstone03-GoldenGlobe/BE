@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmsResponseDto {
+public class SmsResponseDTO {
     private String phoneNumber;
     private String certificationCode;
 }

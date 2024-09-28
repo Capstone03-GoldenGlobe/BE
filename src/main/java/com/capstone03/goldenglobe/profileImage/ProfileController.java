@@ -22,9 +22,9 @@ public class ProfileController {
     // Presigned URL 생성
     @PostMapping("/users/profile/url")
     @Operation(summary = "PresignedURL 생성",description = "PresignedURL과 해당 URL을 통해 정상적으로 이미지 업로드 시, 이미지를 조회할 수 있는 URL을 반환합니다.")
-    public ResponseEntity<ApiResponseSetting<ProfileDto>> updateProfile(Authentication auth){
-        ProfileDto toDto = profileService.getPresignedUrl(auth);
-        ApiResponseSetting<ProfileDto> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "Presigned URL 생성 완료", toDto);
+    public ResponseEntity<ApiResponseSetting<ProfileDTO>> updateProfile(Authentication auth){
+        ProfileDTO toDto = profileService.getPresignedUrl(auth);
+        ApiResponseSetting<ProfileDTO> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "Presigned URL 생성 완료", toDto);
         return ResponseEntity.ok(response);
     }
 
@@ -43,8 +43,8 @@ public class ProfileController {
     public ResponseEntity<ApiResponseSetting<?>> uploadProfileImage(Authentication auth,
                                                                     @RequestParam("file") MultipartFile file) {
         try {
-            ProfileDto toDto = profileService.uploadProfileImage(auth, file);
-            ApiResponseSetting<ProfileDto> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "이미지 업로드 성공", toDto);
+            ProfileDTO toDto = profileService.uploadProfileImage(auth, file);
+            ApiResponseSetting<ProfileDTO> response = new ApiResponseSetting<>(HttpStatus.OK.value(), "이미지 업로드 성공", toDto);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             ApiResponseSetting<String> response = new ApiResponseSetting<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "업로드 실패", null);
