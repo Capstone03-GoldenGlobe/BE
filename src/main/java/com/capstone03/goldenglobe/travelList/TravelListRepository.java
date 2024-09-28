@@ -9,4 +9,5 @@ public interface TravelListRepository extends JpaRepository<TravelList, Long> {
     List<TravelList> findByCountry(String country);
     List<TravelList> findByCity(String city);
     List<TravelList> findByCountryAndCity(String country, String city);
+    List<TravelList> findByUser_UserId(Long userId);
 }

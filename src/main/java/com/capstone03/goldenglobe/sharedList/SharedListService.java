@@ -23,11 +23,6 @@ public class SharedListService {
     private final UserRepository userRepository;
     private final CheckListAuthCheck authCheck;
 
-    // 공유 리스트 전체를 가져오는 메서드 추가
-    public List<SharedList> getAllSharedLists() {
-        return sharedListRepository.findAll();
-    }
-
     public SharedList addUser(Long listId, Long userId, Authentication auth) {
         // 일치하는 체크리스트가 있는지 확인
         CheckList checkList = authCheck.findAndCheckAccessToList(listId, auth);
