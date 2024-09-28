@@ -11,6 +11,6 @@ public interface PdfListRepository extends JpaRepository<PdfList, Long> {
     @Query("SELECT p.pdfPath FROM PdfList p WHERE p.destId = ?1")
     List<String> findAllPdfPathsByDestId(Long destId);
 
-    @Query("SELECT p.pdfName FROM PdfList p WHERE p.destId = ?1")
+    @Query("SELECT p.pdfId,p.pdfName,p.pdfPath FROM PdfList p WHERE p.destId = ?1")
     List<String> findAllPdfNamesByDestId(Long destId);
 }

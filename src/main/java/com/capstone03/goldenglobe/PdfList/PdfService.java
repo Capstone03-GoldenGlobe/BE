@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.capstone03.goldenglobe.user.CustomUser;
-import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +27,7 @@ public class PdfService {
 
   private final PdfListRepository pdfListRepository;
 
-  public String getPresignedUrl(PdfUploadDto request, Authentication auth) {
+  public String getPresignedUrl(PdfUploadDTO request, Authentication auth) {
     CustomUser customUser = (CustomUser) auth.getPrincipal();
     Long destId = request.getDestId();
     String fileName = request.getFileName();
@@ -61,9 +60,18 @@ public class PdfService {
     return String.valueOf(amazonS3.generatePresignedUrl(generatePresignedUrlRequest));
   }
 
-  public List<String> getPdfNames(Long destId, Authentication auth){
-    List<String> pdfNames = pdfListRepository.findAllPdfNamesByDestId(destId);
-    return pdfNames;
+  public List<PdfInfoDTO> getPdfInfos(Long destId, Authentication auth){
+    List<String> pdfInfo = pdfListRepository.findAllPdfNamesByDestId(destId);
+    List<PdfInfoDTO> pdfInfoDto = new ArrayList<>();
+
+    for (String pdfData : pdfInfo){
+      String[] parts = pdfData.split(",");
+      Long pdfId = Long.parseLong(parts[0]);
+      String pdfName = parts[1];
+      String pdfPaths = amazonS3.getUrl(bucket, parts[2]).toString();
+      pdfInfoDto.add(new PdfInfoDTO(pdfId, pdfName, pdfPaths));
+    }
+    return pdfInfoDto;
   }
 
   public List<String> getPdfPaths(Long destId, Authentication auth){
@@ -106,5 +114,11 @@ public class PdfService {
     pdfListRepository.save(pdfList);
 
     return "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + filePath;
+  }
+
+  public void deletePdf(Long pdfId, Authentication auth){
+    pdfListRepository.findById(pdfId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "PDF를 찾을 수 없습니다."));
+    pdfListRepository.deleteById(pdfId);
   }
 }
