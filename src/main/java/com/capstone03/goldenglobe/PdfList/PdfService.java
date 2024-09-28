@@ -8,9 +8,11 @@ import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
@@ -115,6 +117,8 @@ public class PdfService {
   }
 
   public void deletePdf(Long pdfId, Authentication auth){
+    pdfListRepository.findById(pdfId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "PDF를 찾을 수 없습니다."));
     pdfListRepository.deleteById(pdfId);
   }
 }
