@@ -17,6 +17,7 @@ public class ChatBotController {
     this.chatBotService = chatBotService;
   }
 
+  // 새로운 ChatBot 생성
   @PostMapping("/{place_id}")
   public ResponseEntity<ChatBot> createChatBot(@PathVariable("place_id") Long placeId, @RequestBody ChatBot chatBot) {
     chatBot.setDestId(placeId); // place_id를 destId로 설정
@@ -24,13 +25,15 @@ public class ChatBotController {
     return ResponseEntity.status(201).body(createdChatBot); // HTTP 201 Created
   }
 
+  // 단일 ChatBot 조회 (다중이 아닌 경우)
   @GetMapping("/{place_id}/pdflist")
-  public ResponseEntity<List<ChatBot>> getPdfListByPlaceId(@PathVariable("place_id") Long placeId) {
-    // 나중에 PDF 조회 로직 추가하기
-    List<ChatBot> chatBots = chatBotService.getChatBotsByPlaceId(placeId);
-    return ResponseEntity.ok(chatBots);
+  public ResponseEntity<ChatBot> getPdfListByPlaceId(@PathVariable("place_id") Long placeId) {
+    // place_id로 단일 ChatBot 반환
+    ChatBot chatBot = chatBotService.getChatBotByPlaceId(placeId);
+    return ResponseEntity.ok(chatBot);
   }
 
+  // 모든 ChatBot 조회
   @GetMapping
   public ResponseEntity<List<ChatBot>> getAllChatBots() {
     List<ChatBot> chatBots = chatBotService.getAllChatBots();

@@ -15,14 +15,17 @@ public class ChatBotService {
     this.chatBotRepository = chatBotRepository;
   }
 
-  public List<ChatBot> getChatBotsByPlaceId(Long placeId) {
-    return chatBotRepository.findByDestId(placeId);
+  // destId로 단일 ChatBot을 반환하도록 수정
+  public ChatBot getChatBotByPlaceId(Long placeId) {
+    return chatBotRepository.findByDestId(placeId);  // 수정된 부분
   }
 
+  // 모든 ChatBot 반환
   public List<ChatBot> getAllChatBots() {
     return chatBotRepository.findAll();
   }
 
+  // ChatBot 생성
   public ChatBot createChatBot(ChatBot chatBot) {
     return chatBotRepository.save(chatBot);
   }

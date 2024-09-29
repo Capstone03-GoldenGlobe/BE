@@ -4,13 +4,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -81,9 +79,19 @@ public class UserController {
       tokens.put("accessToken", jwt);
       tokens.put("refreshToken", refreshToken);
 
-      // 7. 헤더에 액세스 토큰 추가
+      // 7. 유저 정보 추가 (userId)
+      Optional<User> userOptional = userService.findByCellphone(cellphone); // 유저 정보 조회
+      if (userOptional.isPresent()) {
+        User user = userOptional.get();  // Optional에서 User 꺼내기
+        tokens.put("userId", String.valueOf(user.getUserId()));  // userId 추가
+      } else {
+        return new ResponseEntity<>(Map.of("error", "사용자를 찾을 수 없습니다."), HttpStatus.NOT_FOUND);
+      }
+
+      // 8. 헤더에 액세스 토큰 추가
       response.addHeader("Authorization", "Bearer " + jwt);
-      tokens.put("Authorization","Bearer "+jwt);
+      tokens.put("Authorization", "Bearer " + jwt);
+
       return new ResponseEntity<>(tokens, HttpStatus.OK);
 
     } catch (BadCredentialsException e) {
@@ -92,6 +100,8 @@ public class UserController {
       return new ResponseEntity<>(Map.of("error", "로그인 실패"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
 
   // 로그아웃
   @PostMapping("/auth/logout")
