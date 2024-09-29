@@ -61,7 +61,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/goldenglobe-server
+          docker pull ${{ secrets.DOCKER_USERNAME }}/goldenglobe-server:latest
           docker stop goldenglobe-container || true
           docker rm goldenglobe-container || true
-          docker run -d --name goldenglobe-container -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/goldenglobe-server
+          docker run -d --name goldenglobe-container -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/goldenglobe-server:latest
