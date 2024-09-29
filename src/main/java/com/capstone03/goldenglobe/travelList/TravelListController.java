@@ -54,27 +54,4 @@ public class TravelListController {
     TravelListDTO toDto = TravelListDTO.fromEntity(createdTravelList);
     return new ResponseEntity<>(createdTravelList, HttpStatus.CREATED);
   }
-
-//  @PostMapping("/create/{dest_id}")
-//  public ResponseEntity<TravelListDTO> createTravelListWithDestId(
-//          @PathVariable Long dest_id,
-//          @RequestBody TravelListDTO travelListDto) {
-//
-//    // userId로 User 조회
-//    User user = userRepository.findById(travelListDto.getUserId())
-//            .orElseThrow(() -> new RuntimeException("User not found with id: " + travelListDto.getUserId()));
-//
-//    // TravelList 객체 생성
-//    TravelList travelList = new TravelList();
-//    travelList.setUser(user);
-//    travelList.setDestId(dest_id);
-//    travelList.setCountry(travelListDto.getCountry());
-//    travelList.setCity(travelListDto.getCity());
-//    travelList.setStartDate(travelListDto.getStartDate());
-//    travelList.setEndDate(travelListDto.getEndDate());
-//
-//    TravelList createdTravelList = travelListService.createTravelList(travelList);
-//    TravelListDTO dto = TravelListDTO.fromEntity(createdTravelList);
-//    return new ResponseEntity<>(dto, HttpStatus.CREATED);
-//  }
 }

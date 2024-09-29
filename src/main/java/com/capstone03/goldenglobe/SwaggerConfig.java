@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Profile;
 @OpenAPIDefinition(
         info = @Info(
                 title = "GoldenGlobe 프로젝트 API 명세서",
-                description = "최종 수정 : 2024-09-17",
-                version = "v1"
+                description = "최종 수정 : 2024-09-29",
+                version = "v2"
         )
 )
 @Configuration
