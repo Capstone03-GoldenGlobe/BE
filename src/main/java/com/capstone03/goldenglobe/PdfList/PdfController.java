@@ -31,7 +31,7 @@ public class PdfController {
   }
 
   @GetMapping("/pdf/infos/{dest_id}") // 좌측 nav bar에 보여주기 위한 API
-  @Operation(summary = "챗봇 PDF 이름 목록 조회", description = "dest_id와 일치하는 모든 PDF URL 반환")
+  @Operation(summary = "챗봇 PDF 이름 목록 조회", description = "dest_id와 일치하는 모든 PDF 정보(id, name, path) 반환")
   public ResponseEntity<ApiResponseSetting<List<PdfInfoDTO>>> getAllPdfInfos(@PathVariable("dest_id") Long destId, Authentication auth){
     // 챗봇 접근 권한 체크 필요
     List<PdfInfoDTO> pdfInfos = pdfService.getPdfInfos(destId,auth);
