@@ -17,9 +17,9 @@ public class SharedListController {
     private final SharedListService sharedListService;
 
     @PostMapping("/checklists/share/{list_id}")
-    @Operation(summary = "체크리스트 공유",description = "유저Id를 입력받아 해당 유저와 체크리스트를 공유")
-    public ResponseEntity<ApiResponseSetting<SharedListDTO>> postGroup(@PathVariable("list_id") Long listId, @RequestParam("user_id") Long userId, Authentication auth) {
-        SharedList sharedList = sharedListService.addUser(listId, userId, auth);
+    @Operation(summary = "체크리스트 공유",description = "유저 전화번호를 입력받아 해당 유저와 체크리스트를 공유")
+    public ResponseEntity<ApiResponseSetting<SharedListDTO>> postGroup(@PathVariable("list_id") Long listId, @RequestParam("cellPhone") String cellPhone, Authentication auth) {
+        SharedList sharedList = sharedListService.addUser(listId, cellPhone, auth);
         SharedListDTO toDto = SharedListDTO.fromEntity(sharedList);
         ApiResponseSetting<SharedListDTO> response = new ApiResponseSetting<>(200,"체크리스트 공유 성공",toDto);
         return ResponseEntity.ok(response);

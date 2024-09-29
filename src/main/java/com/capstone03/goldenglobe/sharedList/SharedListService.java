@@ -23,15 +23,21 @@ public class SharedListService {
     private final UserRepository userRepository;
     private final CheckListAuthCheck authCheck;
 
-    public SharedList addUser(Long listId, Long userId, Authentication auth) {
+    public SharedList addUser(Long listId, String cellPhone, Authentication auth) {
         // 일치하는 체크리스트가 있는지 확인
         CheckList checkList = authCheck.findAndCheckAccessToList(listId, auth);
 
+        // cellPhone
+        User user = userRepository.findByCellphone(cellPhone)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
+        // sharedList의 setList, setUser가 같은 경우 추가 X
+        if (sharedListRepository.existsByListAndUser(checkList, user)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "유저가 이미 공유된 체크리스트에 추가되었습니다.");
+        }
+
         SharedList sharedList = new SharedList();
         sharedList.setList(checkList);
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 user_id가 없음"));
         sharedList.setUser(user);
 
         return sharedListRepository.save(sharedList);
