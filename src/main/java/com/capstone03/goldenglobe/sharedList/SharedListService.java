@@ -78,6 +78,11 @@ public class SharedListService {
         SharedList sharedList = sharedListRepository.findByList_ListIdAndUser_UserId(listId, user.getUserId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SharedList를 찾을 수 없습니다."));
 
+        // userColor가 헥스코드(6자리)인지 확인
+        if (!userColor.matches("^#[0-9A-Fa-f]{6}$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "6자리 헥스코드로 입력해주세요.(예: #ff0099)");
+        }
+
         // 색상 변경
         sharedList.setUserColor(userColor);
 
@@ -95,8 +100,9 @@ public class SharedListService {
     public void deleteShareOwner(Long listId, Long userId, Authentication auth) {
         Boolean canCheck = authCheck.isOwner(listId, auth);
         if (canCheck) {
-            Optional<SharedList> sharedList = sharedListRepository.findByList_ListIdAndUser_UserId(listId, userId);
-            sharedList.ifPresent(sharedListRepository::delete);
+            SharedList sharedList = sharedListRepository.findByList_ListIdAndUser_UserId(listId, userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "공유된 사용자를 찾을 수 없습니다."));
+            sharedListRepository.delete(sharedList); // 삭제
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "공유 해제 권한이 없습니다. 체크리스트의 소유자가 아닙니다.");
         }
