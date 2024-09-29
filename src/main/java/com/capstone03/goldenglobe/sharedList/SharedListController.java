@@ -35,7 +35,7 @@ public class SharedListController {
     }
 
     @PutMapping("/checklists/share/{list_id}/color")
-    @Operation(summary = "공유 색상 변경",description = "체크리스트에서 표시되는 색상을 변경합니다.")
+    @Operation(summary = "공유 색상 변경",description = "체크리스트에서 표시되는 색상을 변경합니다. (6자리 헥스코드로 입력. 예:#ff0099")
     public ResponseEntity<ApiResponseSetting<SharedListDTO>> changeColor(@PathVariable("list_id") Long listId, @RequestParam("user_color") String userColor, Authentication auth) {
         SharedList updatedShared = sharedListService.changeColor(listId, userColor, auth);
         SharedListDTO toDto = SharedListDTO.fromEntity(updatedShared);

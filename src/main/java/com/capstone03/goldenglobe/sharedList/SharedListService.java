@@ -78,6 +78,11 @@ public class SharedListService {
         SharedList sharedList = sharedListRepository.findByList_ListIdAndUser_UserId(listId, user.getUserId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SharedList를 찾을 수 없습니다."));
 
+        // userColor가 헥스코드(6자리)인지 확인
+        if (!userColor.matches("^#[0-9A-Fa-f]{6}$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "6자리 헥스코드로 입력해주세요.(예: #ff0099)");
+        }
+
         // 색상 변경
         sharedList.setUserColor(userColor);
 
