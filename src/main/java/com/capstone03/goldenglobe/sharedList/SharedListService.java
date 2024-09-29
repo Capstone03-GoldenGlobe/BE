@@ -3,6 +3,7 @@ package com.capstone03.goldenglobe.sharedList;
 import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
+import com.capstone03.goldenglobe.profileImage.ProfileService;
 import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.user.UserRepository;
@@ -14,14 +15,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SharedListService {
     private final SharedListRepository sharedListRepository;
-    private final CheckListRepository checkListRepository;
     private final UserRepository userRepository;
     private final CheckListAuthCheck authCheck;
+    private final ProfileService profileService;
 
     public SharedList addUser(Long listId, String cellPhone, Authentication auth) {
         // 일치하는 체크리스트가 있는지 확인
@@ -41,6 +43,26 @@ public class SharedListService {
         sharedList.setUser(user);
 
         return sharedListRepository.save(sharedList);
+    }
+
+    public List<SharedListDTO> getSharedUsers(Long listId, Authentication auth){
+        // list_id를 토대로 해당 리스트에 접근 권한이 있는지 확인
+        CheckList checkList = authCheck.findAndCheckAccessToList(listId, auth);
+
+        // 해당 체크리스트를 공유받은 사용자 목록 조회
+        List<SharedList> sharedLists = sharedListRepository.findByList_ListId(checkList.getListId());
+
+        // DTO로 변환하여 반환할 데이터 준비
+        return sharedLists.stream()
+                .map(sharedList -> new SharedListDTO(
+                        sharedList.getSharedId(),
+                        sharedList.getList().getListId(),
+                        sharedList.getUser().getUserId(),
+                        sharedList.getUser().getNickname(),
+                        sharedList.getUserColor(),
+                        profileService.getProfileUrl(sharedList.getUser())
+                ))
+                .collect(Collectors.toList());
     }
 
     public SharedList changeColor(Long listId, String userColor, Authentication auth) {

@@ -13,4 +13,5 @@ public interface SharedListRepository extends JpaRepository<SharedList, Long> {
     Optional<SharedList> findByList_ListIdAndUser_UserId(Long listId, Long userId);
     List<SharedList> findByUser_UserId(Long userId);
     boolean existsByListAndUser(CheckList checkList, User user);
+    List<SharedList> findByList_ListId(Long listId);
 }
