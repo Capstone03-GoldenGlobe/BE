@@ -12,15 +12,18 @@ public class SharedListDTO {
     private Long shared_id;
     private Long list_id;
     private Long user_id;
-
+    private String user_nickname;
     private String user_color;
+    private String user_profile;
 
     public static SharedListDTO fromEntity(SharedList sharedList) {
         return new SharedListDTO(
                 sharedList.getSharedId(),
                 sharedList.getList().getListId(),
                 sharedList.getUser().getUserId(),
-                sharedList.getUserColor()
+                sharedList.getUser().getNickname(),
+                sharedList.getUserColor(),
+                sharedList.getUser().getProfile()
         );
     }
 }

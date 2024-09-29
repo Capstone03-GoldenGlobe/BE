@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,11 +18,19 @@ public class SharedListController {
     private final SharedListService sharedListService;
 
     @PostMapping("/checklists/share/{list_id}")
-    @Operation(summary = "체크리스트 공유",description = "유저Id를 입력받아 해당 유저와 체크리스트를 공유")
-    public ResponseEntity<ApiResponseSetting<SharedListDTO>> postGroup(@PathVariable("list_id") Long listId, @RequestParam("user_id") Long userId, Authentication auth) {
-        SharedList sharedList = sharedListService.addUser(listId, userId, auth);
+    @Operation(summary = "체크리스트 공유",description = "유저 전화번호를 입력받아 해당 유저와 체크리스트를 공유")
+    public ResponseEntity<ApiResponseSetting<SharedListDTO>> postShared(@PathVariable("list_id") Long listId, @RequestParam("cellPhone") String cellPhone, Authentication auth) {
+        SharedList sharedList = sharedListService.addUser(listId, cellPhone, auth);
         SharedListDTO toDto = SharedListDTO.fromEntity(sharedList);
         ApiResponseSetting<SharedListDTO> response = new ApiResponseSetting<>(200,"체크리스트 공유 성공",toDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/checklists/share/{list_id}")
+    @Operation(summary = "공유 사용자 조회",description = "현재 체크리스트를 공유받은 사용자를 조회합니다.")
+    public ResponseEntity<ApiResponseSetting<List<SharedListDTO>>> getShared(@PathVariable("list_id") Long listId, Authentication auth){
+        List<SharedListDTO> sharedListDTOs = sharedListService.getSharedUsers(listId, auth);
+        ApiResponseSetting<List<SharedListDTO>> response = new ApiResponseSetting<>(200,"공유 체크리스트 조회",sharedListDTOs);
         return ResponseEntity.ok(response);
     }
 

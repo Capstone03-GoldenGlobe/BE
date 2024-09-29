@@ -64,6 +64,10 @@ public class ProfileService {
         return amazonS3.getUrl(bucket,user.get().getProfile()).toString();
     }
 
+    public String getProfileUrl(User user){
+        return amazonS3.getUrl(bucket,user.getProfile()).toString();
+    }
+
     public ProfileDTO uploadProfileImage(Authentication auth, MultipartFile file) throws IOException {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         String fileName = "profile/" + customUser.getId()+"_"+UUID.randomUUID().toString()+".jpg";
