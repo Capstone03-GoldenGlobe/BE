@@ -24,7 +24,7 @@ public class User {
   @Column(name = "birth")
   private LocalDate birth;
 
-  @Column(name = "cellphone", length = 20)
+  @Column(name = "cellphone", length = 11) // unique 제약조건추가
   private String cellphone;
 
   @Column(name = "password", nullable = false, columnDefinition = "TEXT")
