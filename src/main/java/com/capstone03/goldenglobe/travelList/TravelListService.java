@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +44,7 @@ public class TravelListService {
 
     // 챗봇 자동 생성
     ChatBot chatBot = new ChatBot();
-    chatBot.setDestId(savedTravelList.getDestId());
+    chatBot.setDest(savedTravelList);
     chatBotRepository.save(chatBot);
 
     return savedTravelList;
