@@ -1,11 +1,11 @@
-# main 브랜치에 push 혹은 pull request가 발생한 경우 동작하도록 설정
+# main 브랜치에 push(or merge)가 발생한 경우만 동작하도록 수정
 name: Java CI/CD with Gradle
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
 
 permissions:
   contents: read
