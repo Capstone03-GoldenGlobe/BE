@@ -60,8 +60,15 @@ public class ProfileService {
 
     public String getProfileUrl(Authentication auth){
         CustomUser customUser = (CustomUser) auth.getPrincipal();
-        Optional<User> user = userRepository.findById(customUser.getId());
-        return amazonS3.getUrl(bucket,user.get().getProfile()).toString();
+        User user = userRepository.findById(customUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+
+        // 프로필이 null인 경우, null 반환
+        if (user.getProfile() == null) {
+            return null;
+        }
+
+        return amazonS3.getUrl(bucket, user.getProfile()).toString();
     }
 
     public String getProfileUrl(User user){
