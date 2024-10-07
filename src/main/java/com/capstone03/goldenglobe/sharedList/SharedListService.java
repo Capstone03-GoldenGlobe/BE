@@ -2,7 +2,6 @@ package com.capstone03.goldenglobe.sharedList;
 
 import com.capstone03.goldenglobe.CheckListAuthCheck;
 import com.capstone03.goldenglobe.checkList.CheckList;
-import com.capstone03.goldenglobe.checkList.CheckListRepository;
 import com.capstone03.goldenglobe.profileImage.ProfileService;
 import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.User;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,12 +23,12 @@ public class SharedListService {
     private final CheckListAuthCheck authCheck;
     private final ProfileService profileService;
 
-    public SharedList addUser(Long listId, String cellPhone, Authentication auth) {
+    public SharedList addUser(Long listId, SharedListDTO sharedListDTO, Authentication auth) {
         // 일치하는 체크리스트가 있는지 확인
         CheckList checkList = authCheck.findAndCheckAccessToList(listId, auth);
 
         // cellPhone
-        User user = userRepository.findByCellphone(cellPhone)
+        User user = userRepository.findByCellphone(sharedListDTO.getCellPhone())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
 
         // sharedList의 setList, setUser가 같은 경우 추가 X
@@ -42,10 +40,17 @@ public class SharedListService {
         sharedList.setList(checkList);
         sharedList.setUser(user);
 
+        String userColor = sharedListDTO.getColor();
+        if(isHex(userColor)){
+            sharedList.setUserColor(userColor);
+        } else {
+            sharedList.setUserColor(null);
+        }
+
         return sharedListRepository.save(sharedList);
     }
 
-    public List<SharedListDTO> getSharedUsers(Long listId, Authentication auth){
+    public List<SharedListResponseDTO> getSharedUsers(Long listId, Authentication auth){
         // list_id를 토대로 해당 리스트에 접근 권한이 있는지 확인
         CheckList checkList = authCheck.findAndCheckAccessToList(listId, auth);
 
@@ -54,7 +59,7 @@ public class SharedListService {
 
         // DTO로 변환하여 반환할 데이터 준비
         return sharedLists.stream()
-                .map(sharedList -> new SharedListDTO(
+                .map(sharedList -> new SharedListResponseDTO(
                         sharedList.getSharedId(),
                         sharedList.getList().getListId(),
                         sharedList.getUser().getUserId(),
@@ -63,6 +68,13 @@ public class SharedListService {
                         profileService.getProfileUrl(sharedList.getUser())
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public boolean isHex(String color){
+        if(!color.matches("^#[0-9A-Fa-f]{6}$")){
+            return false;
+        }
+        return true;
     }
 
     public SharedList changeColor(Long listId, String userColor, Authentication auth) {
@@ -79,7 +91,7 @@ public class SharedListService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SharedList를 찾을 수 없습니다."));
 
         // userColor가 헥스코드(6자리)인지 확인
-        if (!userColor.matches("^#[0-9A-Fa-f]{6}$")) {
+        if(!isHex(userColor)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "6자리 헥스코드로 입력해주세요.(예: #ff0099)");
         }
 

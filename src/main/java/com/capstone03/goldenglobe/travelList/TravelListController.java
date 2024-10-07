@@ -1,5 +1,8 @@
 package com.capstone03.goldenglobe.travelList;
 
+import com.azure.core.annotation.Put;
+import com.capstone03.goldenglobe.ApiResponseSetting;
+import com.capstone03.goldenglobe.checkList.CheckListResponseDTO;
 import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.User;
 import com.capstone03.goldenglobe.user.UserRepository;
@@ -7,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import retrofit2.http.Path;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +43,16 @@ public class TravelListController {
     }
   }
 
+  @PutMapping("/{place_id}")
+  public ResponseEntity<ApiResponseSetting<TravelListResponseDTO>> updateTravelList(@PathVariable("place_id") Long placeId, @RequestBody TravelListDTO travelListDTO, Authentication auth){
+    TravelList travelList = travelListService.updateTravelList(placeId,travelListDTO,auth);
+    TravelListResponseDTO toDto = TravelListResponseDTO.fromEntity(travelList);
+    ApiResponseSetting<TravelListResponseDTO> response = new ApiResponseSetting<>(200, "여행지 수정 성공", toDto);
+    return ResponseEntity.ok(response);
+  }
+
   @PostMapping("/create")
-  public ResponseEntity<TravelList> createTravelList(@RequestBody TravelListDTO travelListDto, Authentication auth) {
+  public ResponseEntity<ApiResponseSetting<TravelListResponseDTO>> createTravelList(@RequestBody TravelListDTO travelListDto, Authentication auth) {
     CustomUser customUser = (CustomUser) auth.getPrincipal();
     Optional<User> user = userRepository.findById(customUser.getId());
 
@@ -51,7 +64,8 @@ public class TravelListController {
     travelList.setEndDate(travelListDto.getEndDate());
 
     TravelList createdTravelList = travelListService.createTravelList(travelList);
-    TravelListDTO toDto = TravelListDTO.fromEntity(createdTravelList);
-    return new ResponseEntity<>(createdTravelList, HttpStatus.CREATED);
+    TravelListResponseDTO toDto = TravelListResponseDTO.fromEntity(createdTravelList);
+    ApiResponseSetting<TravelListResponseDTO> response = new ApiResponseSetting<>(200, "여행지 생성 성공", toDto);
+    return ResponseEntity.ok(response);
   }
 }

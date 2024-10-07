@@ -33,9 +33,13 @@ public class CheckListService {
     private final CheckListAuthCheck authCheck;
 
     public String makeCheckList(Long destId, Authentication auth){
-        TravelList travelList = (TravelList) travelListRepository.findByDestId(destId);
+        Optional<TravelList> travelList = travelListRepository.findByDestId(destId);
+        if (travelList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "여행지를 찾을 수 없습니다.");
+        }
+
         CheckList checkList = new CheckList();
-        checkList.setDest(travelList);
+        checkList.setDest(travelList.get());
 
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         var user = new User();
