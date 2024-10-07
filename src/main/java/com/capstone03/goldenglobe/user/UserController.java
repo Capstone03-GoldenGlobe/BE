@@ -15,9 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +35,13 @@ public class UserController {
       return new ResponseEntity<>("이미 가입된 전화번호입니다.", HttpStatus.CONFLICT);
     }
     user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+    // 기본 권한 추가
+    Set<String> roles = new HashSet<>();
+    roles.add("USER"); // USER, ADMIN
+    user.setRoles(roles);
+
+    // 사용자 저장
     userService.saveUser(user);
 
     return new ResponseEntity<>("성공적으로 회원가입되었습니다.", HttpStatus.CREATED);

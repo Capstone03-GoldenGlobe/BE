@@ -28,8 +28,14 @@ public class JwtUtil {
     public static String createToken(Authentication auth) {
         var user = (CustomUser) auth.getPrincipal();
         var authorities = auth.getAuthorities().stream()
-            .map(a -> a.getAuthority())
-            .collect(Collectors.joining(","));
+                .map(a -> a.getAuthority())
+                .collect(Collectors.joining(","));
+        if (authorities.isEmpty()) {
+            throw new IllegalArgumentException("사용자에게 권한이 없습니다.");
+        }
+//        var authorities = auth.getAuthorities().stream()
+//            .map(a -> a.getAuthority())
+//            .collect(Collectors.joining(","));
         return Jwts.builder()
             .claim("name", user.getName())
             .claim("id", user.getId())
