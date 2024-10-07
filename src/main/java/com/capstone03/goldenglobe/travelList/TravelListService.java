@@ -1,10 +1,14 @@
 package com.capstone03.goldenglobe.travelList;
 
+import com.capstone03.goldenglobe.TravelAuthCheck;
 import com.capstone03.goldenglobe.chatBot.ChatBot;
 import com.capstone03.goldenglobe.chatBot.ChatBotRepository;
 import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
+import com.capstone03.goldenglobe.user.CustomUser;
+import com.capstone03.goldenglobe.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +21,7 @@ public class TravelListService {
   private final TravelListRepository travelListRepository;
   private final CheckListRepository checkListRepository;
   private final ChatBotRepository chatBotRepository;
+  private final TravelAuthCheck travelAuthCheck;
 
   public List<TravelList> getTravelList(String country, String city) {
     if (country != null && city != null) {
@@ -48,5 +53,14 @@ public class TravelListService {
     chatBotRepository.save(chatBot);
 
     return savedTravelList;
+  }
+
+  public TravelList updateTravelList(Long placeId, TravelListDTO travelListDTO, Authentication auth){
+    TravelList travelList = travelAuthCheck.isOkay(placeId,auth);
+    travelList.setCountry(travelListDTO.getCountry());
+    travelList.setCity(travelListDTO.getCity());
+    travelList.setStartDate(travelListDTO.getStartDate());
+    travelList.setEndDate(travelListDTO.getEndDate());
+    return travelListRepository.save(travelList);
   }
 }
