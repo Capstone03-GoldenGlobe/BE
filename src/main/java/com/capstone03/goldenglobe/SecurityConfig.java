@@ -1,6 +1,7 @@
 package com.capstone03.goldenglobe;
 
 import com.capstone03.goldenglobe.user.JwtFilter;
+import com.capstone03.goldenglobe.user.blackList.BlackListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,9 @@ public class SecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private BlackListService blackListService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -65,7 +69,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtFilter(), ExceptionTranslationFilter.class)
+                .addFilterBefore(new JwtFilter(blackListService), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(SWAGGER_WHITELIST).permitAll() // Swagger UI 접근 허용
                         .requestMatchers("/admin/**").hasRole("ADMIN")

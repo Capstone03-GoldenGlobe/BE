@@ -1,5 +1,6 @@
 package com.capstone03.goldenglobe.user;
 
+import com.capstone03.goldenglobe.user.blackList.BlackListService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,8 @@ public class UserController {
   private final UserService userService;
   private final BCryptPasswordEncoder passwordEncoder;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
+  private final BlackListService blackListService;
+  private final JwtUtil jwtUtil;
 
   // 회원 가입
   @PostMapping("/auth/signup")
@@ -63,34 +66,19 @@ public class UserController {
       var jwt = JwtUtil.createToken(auth);
       var refreshToken = JwtUtil.createRefreshToken(auth);
 
-      // 3. 리프레시 토큰을 DB에 저장 (유저별로 관리)
+      // 3. 리프레시 토큰을 DB에 저장
       userService.updateRefreshToken(cellphone, refreshToken);
 
-      // 4. 쿠키에 액세스 토큰 저장
-      var jwtCookie = new Cookie("jwt", jwt);
-      jwtCookie.setMaxAge(600); // 유효기간 600초 설정 (예: 10분)
-      jwtCookie.setHttpOnly(true);
-      jwtCookie.setPath("/");
-
-      // 5. 쿠키에 리프레시 토큰 저장
-      var refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-      refreshTokenCookie.setMaxAge(86400); // 유효기간 1일 설정
-      refreshTokenCookie.setHttpOnly(true);
-      refreshTokenCookie.setPath("/");
-
-      response.addCookie(jwtCookie);
-      response.addCookie(refreshTokenCookie);
-
-      // 6. 응답에 토큰 정보 포함
+      // 4. 응답에 리프레시 토큰 정보 포함
       Map<String, String> tokens = new HashMap<>();
-      tokens.put("accessToken", jwt);
       tokens.put("refreshToken", refreshToken);
 
-      // 7. 헤더에 액세스 토큰 추가
+      // 5. 헤더에 액세스 토큰 추가
       response.addHeader("Authorization", "Bearer " + jwt);
       tokens.put("Authorization","Bearer "+jwt);
-      return new ResponseEntity<>(tokens, HttpStatus.OK);
+      System.out.println(jwt);
 
+      return new ResponseEntity<>(tokens, HttpStatus.OK);
     } catch (BadCredentialsException e) {
       return new ResponseEntity<>(Map.of("error", "잘못된 접근"), HttpStatus.UNAUTHORIZED);
     } catch (Exception e) {
@@ -100,40 +88,23 @@ public class UserController {
 
   // 로그아웃
   @PostMapping("/auth/logout")
-  public ResponseEntity<String> logoutUser(HttpServletRequest request) {
-    // 쿠키에서 JWT 토큰 가져오기
-    Cookie[] cookies = request.getCookies();
-    String jwtToken = null;
+  public ResponseEntity<Map<String, String>> logoutUser(HttpServletRequest request) {
+    String authorizationHeader = request.getHeader("Authorization");
 
-    if (cookies != null) {
-      for (Cookie cookie : cookies) {
-        if ("jwt".equals(cookie.getName())) {
-          jwtToken = cookie.getValue();
-          break;
-        }
-      }
+    if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+      return new ResponseEntity<>(Map.of("error", "토큰을 찾을 수 없습니다."), HttpStatus.BAD_REQUEST);
     }
 
-    if (jwtToken != null) {
-      // JWT 토큰을 블랙리스트에 추가
-      userService.blacklistToken(jwtToken);
+    // 액세스 토큰 추출
+    String accessToken = authorizationHeader.substring(7);
 
-      // JWT와 리프레시 토큰을 삭제하기 위해 쿠키를 만료 처리
-      Cookie jwtCookie = new Cookie("jwt", null);
-      jwtCookie.setMaxAge(0);
-      jwtCookie.setPath("/");
-      HttpServletResponse response = (HttpServletResponse) request;
-      response.addCookie(jwtCookie);
+    // 액세스 토큰의 만료 시간 가져오기
+    Date expirationDate = jwtUtil.getExpiration(accessToken);
 
-      Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-      refreshTokenCookie.setMaxAge(0);
-      refreshTokenCookie.setPath("/");
-      response.addCookie(refreshTokenCookie);
+    // 블랙리스트에 추가
+    blackListService.addToBlacklist(accessToken, expirationDate);
 
-      return new ResponseEntity<>("로그아웃 성공!", HttpStatus.OK);
-    }
-
-    return new ResponseEntity<>("토큰을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(Map.of("message", "로그아웃 성공"), HttpStatus.OK);
   }
 
   // 사용자 정보 조회
@@ -177,4 +148,6 @@ public class UserController {
       return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
+
+  // 리프레시 토큰으로 액세스 토큰 재발급
 }
