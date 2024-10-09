@@ -58,7 +58,8 @@ public class JwtFilter extends OncePerRequestFilter { //요청마다 1회만 실
 
         // 3. 블랙리스트 체크
         if (blackListService.isTokenBlacklisted(jwtToken)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그아웃된 사용자입니다.");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그아웃된 사용자입니다."); // 블랙리스트에 있을 경우 에러 응답
+            return;
         }
 
         System.out.println("Claims: " + claims);
