@@ -33,16 +33,12 @@ public class JwtUtil {
         if (authorities.isEmpty()) {
             throw new IllegalArgumentException("사용자에게 권한이 없습니다.");
         }
-//        var authorities = auth.getAuthorities().stream()
-//            .map(a -> a.getAuthority())
-//            .collect(Collectors.joining(","));
         return Jwts.builder()
             .claim("name", user.getName())
             .claim("id", user.getId())
             .claim("authorities", authorities)
             .claim("cellphone", user.getCellphone())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 10800000)) // 3시간
             .signWith(key)
             .compact();
     }
@@ -52,7 +48,7 @@ public class JwtUtil {
         var user = (CustomUser) auth.getPrincipal();
         return Jwts.builder()
             .claim("id", user.getId()) // 최소한의 정보만 포함
-            .claim("email", user.getUsername())
+            .claim("cellphone", user.getCellphone())
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1일
             .signWith(key)
@@ -66,5 +62,11 @@ public class JwtUtil {
             .build()
             .parseClaimsJws(token)  // 이 메서드는 `JwtParser` 객체에서 호출됩니다.
             .getBody();
+    }
+
+    // JWT 토큰에서 만료 시간 추출
+    public static Date getExpiration(String token){
+        Claims claim = extractToken(token);
+        return claim.getExpiration();
     }
 }

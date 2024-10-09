@@ -39,9 +39,6 @@ public class User {
   @Column(name = "gender", length = 10)
   private String gender;
 
-  @Column(name = "refresh_token")
-  private String refreshToken;
-
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<TravelList> travelLists;
 

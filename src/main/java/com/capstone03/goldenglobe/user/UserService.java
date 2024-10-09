@@ -1,5 +1,8 @@
 package com.capstone03.goldenglobe.user;
 
+import com.capstone03.goldenglobe.user.refreshToken.RefreshToken;
+import com.capstone03.goldenglobe.user.refreshToken.RefreshTokenRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,16 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
   private final UserRepository userRepository;
-  private final JwtBlacklistService jwtBlacklistService;
-
-  @Autowired
-  public UserService(UserRepository userRepository, JwtBlacklistService jwtBlacklistService) {
-    this.userRepository = userRepository;
-    this.jwtBlacklistService = jwtBlacklistService;
-  }
+  private final RefreshTokenRepository refreshTokenRepository;
 
   // 현재 로그인한 사용자 이름 가져오기
   public String getLoggedInUsername() {
@@ -75,19 +73,10 @@ public class UserService {
     Optional<User> userOptional = userRepository.findByCellphone(cellphone);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
-      user.setRefreshToken(refreshToken); // 리프레시 토큰 설정
-      userRepository.save(user); // 업데이트된 사용자 정보 저장
+
+      RefreshToken refreshToKen = new RefreshToken(user.getUserId(), refreshToken);
+      refreshTokenRepository.save(refreshToKen);
     }
-  }
-
-  // JWT 토큰을 블랙리스트에 추가
-  public void blacklistToken(String token) {
-    jwtBlacklistService.addToBlacklist(token);
-  }
-
-  // JWT 토큰이 블랙리스트에 있는지 확인
-  public boolean isTokenBlacklisted(String token) {
-    return jwtBlacklistService.isBlacklisted(token);
   }
 }
 
