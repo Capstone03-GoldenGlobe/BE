@@ -32,7 +32,7 @@ public class SmsService {
         redisTemplate.opsForValue().set(to, certificationCode, EXPIRATION_TIME, TimeUnit.MINUTES);
 
         // 문자 발송
-        smsUtil.sendOne(to,certificationCode);
+        // smsUtil.sendOne(to,certificationCode);
 
         return certificationCode;
     }
