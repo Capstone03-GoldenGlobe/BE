@@ -55,7 +55,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("http://localhost:3000"); // React 앱의 주소
+        configuration.addAllowedOrigin("http://localhost:3000"); // 프론트 로컬 주소
+        configuration.addAllowedOrigin("https://goldenglobe.vercel.app"); // 프론트 배포 주소
         configuration.addAllowedHeader("*"); // 모든 헤더
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
