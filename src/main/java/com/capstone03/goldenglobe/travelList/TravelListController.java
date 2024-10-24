@@ -68,4 +68,11 @@ public class TravelListController {
     ApiResponseSetting<TravelListResponseDTO> response = new ApiResponseSetting<>(200, "여행지 생성 성공", toDto);
     return ResponseEntity.ok(response);
   }
+
+  @DeleteMapping("/{place_id}")
+  public ResponseEntity<ApiResponseSetting<Void>> deleteTravelList(@PathVariable("place_id") Long placeId, Authentication auth){
+    travelListService.deleteTravelList(placeId,auth);
+    ApiResponseSetting<Void> response = new ApiResponseSetting<>(200, "여행지 삭제 완료", null);
+    return ResponseEntity.ok(response);
+  }
 }

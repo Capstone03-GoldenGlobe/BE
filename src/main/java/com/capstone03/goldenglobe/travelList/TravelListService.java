@@ -7,9 +7,12 @@ import com.capstone03.goldenglobe.checkList.CheckList;
 import com.capstone03.goldenglobe.checkList.CheckListRepository;
 import com.capstone03.goldenglobe.user.CustomUser;
 import com.capstone03.goldenglobe.user.User;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,5 +65,12 @@ public class TravelListService {
     travelList.setStartDate(travelListDTO.getStartDate());
     travelList.setEndDate(travelListDTO.getEndDate());
     return travelListRepository.save(travelList);
+  }
+
+  public void deleteTravelList(Long placeId, Authentication auth){
+    if(!travelListRepository.existsById(placeId)){ // 여행지 존재 여부확인
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 여행지가 없습니다.");
+    }
+    travelListRepository.deleteById(placeId);
   }
 }
