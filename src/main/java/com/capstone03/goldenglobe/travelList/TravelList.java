@@ -41,8 +41,10 @@ public class TravelList {
   private LocalDate endDate;
 
   @OneToOne(mappedBy = "dest", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
   private CheckList checkList;
 
   @OneToOne(mappedBy = "dest", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
   private ChatBot chatBot;
 }
