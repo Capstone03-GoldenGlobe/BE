@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 @Tag(name="ListGroup",description = "체크리스트 내 그룹 API")
@@ -37,7 +39,8 @@ public class ListGroupController {
 
     @DeleteMapping("/checklists/groups")
     @Operation(summary = "그룹 삭제",description = "그룹Id로 그룹 삭제")
-    public ResponseEntity<ApiResponseSetting<Void>> deleteItem(@RequestParam("group_id") Long groupId, Authentication auth) {
+    public ResponseEntity<ApiResponseSetting<Void>> deleteItem(@RequestBody Map<String, Long> body, Authentication auth) {
+        Long groupId = body.get("group_id");
         listGroupService.deleteGroup(groupId, auth);
         ApiResponseSetting<Void> response = new ApiResponseSetting<>(200, "그룹 삭제 완료(메모, 항목 포함)", null);
         return ResponseEntity.ok(response);
