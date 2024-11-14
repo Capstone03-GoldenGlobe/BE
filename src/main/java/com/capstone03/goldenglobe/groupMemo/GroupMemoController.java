@@ -38,8 +38,7 @@ public class GroupMemoController {
 
     @DeleteMapping("/checklists/memos")
     @Operation(summary = "메모 삭제",description = "메모Id로 메모 삭제")
-    public ResponseEntity<ApiResponseSetting<Void>> deleteItem(@RequestBody Map<String, Long> body, Authentication auth) {
-        Long memoId = body.get("memo_id");
+    public ResponseEntity<ApiResponseSetting<Void>> deleteItem(@RequestParam("memo_id") Long memoId, Authentication auth) {
         groupMemoService.deleteMemo(memoId, auth);
         ApiResponseSetting<Void> response = new ApiResponseSetting<>(200, "메모 삭제 완료", null);
         return ResponseEntity.ok(response);
