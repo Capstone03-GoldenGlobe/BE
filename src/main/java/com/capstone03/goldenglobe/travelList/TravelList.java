@@ -1,5 +1,9 @@
 package com.capstone03.goldenglobe.travelList;
 
+import com.capstone03.goldenglobe.chatBot.ChatBot;
+import com.capstone03.goldenglobe.checkList.CheckList;
+import com.capstone03.goldenglobe.groupMemo.GroupMemo;
+import com.capstone03.goldenglobe.listItem.ListItem;
 import com.capstone03.goldenglobe.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table
@@ -35,4 +40,11 @@ public class TravelList {
   @Column(name = "end_date")
   private LocalDate endDate;
 
+  @OneToOne(mappedBy = "dest", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private CheckList checkList;
+
+  @OneToOne(mappedBy = "dest", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private ChatBot chatBot;
 }

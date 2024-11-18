@@ -104,6 +104,12 @@ public class PdfService {
 
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentType(file.getContentType());
+
+    // 파일 확장자가 PDF인지 확인하는 로직
+    if (!fileName.toLowerCase().endsWith(".pdf") || !"application/pdf".equals(file.getContentType())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "pdf파일만 업로드 가능합니다.");
+    }
+
     // 파일 업로드
     amazonS3.putObject(bucket, filePath, file.getInputStream(), metadata);
 
