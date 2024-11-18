@@ -39,6 +39,15 @@ public class TravelListService {
   }
 
   public TravelList createTravelList(TravelList travelList) {
+    // 날짜 검증 로직 추가
+    if (travelList.getStartDate() == null || travelList.getEndDate() == null) {
+      throw new IllegalArgumentException("시작일과 종료일은 필수 입력 사항입니다.");
+    }
+
+    if (travelList.getStartDate().isAfter(travelList.getEndDate())) {
+      throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
+    }
+
     TravelList savedTravelList = travelListRepository.save(travelList);
 
     // 체크리스트 자동 생성되도록
@@ -56,7 +65,15 @@ public class TravelListService {
   }
 
   public TravelList updateTravelList(Long placeId, TravelListDTO travelListDTO, Authentication auth){
-    TravelList travelList = travelAuthCheck.isOkay(placeId,auth);
+    TravelList travelList = travelAuthCheck.isOkay(placeId, auth);
+
+    // 날짜 검증 로직 추가
+    if (travelListDTO.getStartDate() != null && travelListDTO.getEndDate() != null) {
+      if (travelListDTO.getStartDate().isAfter(travelListDTO.getEndDate())) {
+        throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다.");
+      }
+    }
+
     travelList.setCountry(travelListDTO.getCountry());
     travelList.setCity(travelListDTO.getCity());
     travelList.setStartDate(travelListDTO.getStartDate());
