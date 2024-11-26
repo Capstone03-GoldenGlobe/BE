@@ -22,4 +22,7 @@ public class PdfList {
 
   @Column(name = "pdf_path")
   private String pdfPath;
+
+  @Column(name = "faiss", columnDefinition = "TEXT")
+  private String faiss;
 }

@@ -113,12 +113,22 @@ public class PdfService {
     // 파일 업로드
     amazonS3.putObject(bucket, filePath, file.getInputStream(), metadata);
 
+//    // Flask API를 통해 PDF 임베딩 수행
+//    String vectorStoreId;
+//    try {
+//      vectorStoreId = callFlaskEmbedApi(file);
+//    } catch (Exception e) {
+//      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "PDF 임베딩 중 오류 발생: " + e.getMessage());
+//    }
+
+
     // DB 저장
     PdfList pdfList = new PdfList();
     pdfList.setUserId(customUser.getId());
     pdfList.setDestId(destId);
     pdfList.setPdfPath(filePath);
     pdfList.setPdfName(fileName);
+    //pdfList.setPdfContent(vectorStoreId);
     pdfListRepository.save(pdfList);
 
     return "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + filePath;

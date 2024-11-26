@@ -108,20 +108,26 @@ public class UserController {
   }
 
   // 사용자 정보 조회
-  @GetMapping("/myPage/{user_id}")
-  public ResponseEntity<User> getUserInfo(@PathVariable("user_id") Long userId) {
-    Optional<User> userOptional = userService.findById(userId);
+  @GetMapping("/myPage")
+  public ResponseEntity<UserDTO> getUserInfo(Authentication auth) {
+    CustomUser customUser = (CustomUser) auth.getPrincipal();
+    Long authUserId = customUser.getId();
+    Optional<User> userOptional = userService.findById(authUserId);
     if (userOptional.isPresent()) {
-      return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
+      UserDTO userDTO = UserDTO.fromEntity(userOptional.get());
+      return new ResponseEntity<>(userDTO, HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 
   // 사용자 정보 수정
-  @PutMapping("/myPage/modifyProfile/{user_id}")
-  public ResponseEntity<String> updateUserInfo(@PathVariable("user_id") Long userId, @RequestBody User updatedUser) {
-    Optional<User> userOptional = userService.findById(userId);
+  @PutMapping("/myPage/modifyProfile")
+  public ResponseEntity<String> updateUserInfo(@RequestBody User updatedUser,Authentication auth) {
+    CustomUser customUser = (CustomUser) auth.getPrincipal();
+    Long authUserId = customUser.getId();
+    Optional<User> userOptional = userService.findById(authUserId);
+
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       // 필요한 필드 업데이트 (비밀번호 암호화도 가능)
@@ -138,11 +144,14 @@ public class UserController {
   }
 
   // 회원 탈퇴
-  @DeleteMapping("/users/{user_id}")
-  public ResponseEntity<String> deleteUser(@PathVariable("user_id") Long userId) {
-    Optional<User> userOptional = userService.findById(userId);
+  @DeleteMapping("/users")
+  public ResponseEntity<String> deleteUser(Authentication auth) {
+    CustomUser customUser = (CustomUser) auth.getPrincipal();
+    Long authUserId = customUser.getId();
+    Optional<User> userOptional = userService.findById(authUserId);
+
     if (userOptional.isPresent()) {
-      userService.deleteUser(userId);
+      userService.deleteUser(authUserId);
       return new ResponseEntity<>("성공적으로 탈퇴처리되었습니다.", HttpStatus.OK);
     } else {
       return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
