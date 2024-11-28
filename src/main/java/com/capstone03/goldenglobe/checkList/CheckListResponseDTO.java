@@ -12,6 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckListResponseDTO {
+    private String country;
+    private String city;
     private String listId;
     private List<GroupResponseDTO> groups;
 }

@@ -64,6 +64,16 @@ public class CheckListService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "체크리스트에 접근할 수 없습니다.");
         }
 
+        // country, city 조회
+        Optional<TravelList> optionalTravelList = travelListRepository.findById(checkList.getListId());
+        if (optionalTravelList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "TravelList 정보를 찾을 수 없습니다.");
+        }
+
+        TravelList travelList = optionalTravelList.get();
+        String country = travelList.getCountry();
+        String city = travelList.getCity();
+
         // 2. ListGroup 조회
         List<ListGroup> listGroups = listGroupRepository.findByList_ListId(checkList.getListId());
 
@@ -104,6 +114,6 @@ public class CheckListService {
         }).collect(Collectors.toList());
 
         // CheckListResponseDto 생성
-        return new CheckListResponseDTO(checkList.getListId().toString(), groupsData);
+        return new CheckListResponseDTO(country, city,checkList.getListId().toString(), groupsData);
     }
 }
