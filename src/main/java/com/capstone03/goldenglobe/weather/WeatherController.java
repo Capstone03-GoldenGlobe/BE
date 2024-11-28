@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class WeatherController {
 
     private final WeatherService weatherService;
-    @GetMapping("/temp/{travel_id}")
-    public ResponseEntity<ApiResponseSetting<Double>> getAverageTemperature(@PathVariable("travel_id") Long travelId) {
-        ApiResponseSetting<Double> response = weatherService.getTemperature(travelId);
+    @GetMapping("/temp/{dest_id}")
+    public ResponseEntity<ApiResponseSetting<Double>> getAverageTemperature(@PathVariable("dest_id") Long destId) {
+        ApiResponseSetting<Double> response = weatherService.getTemperature(destId);
         return ResponseEntity.ok(response);
     }
 }

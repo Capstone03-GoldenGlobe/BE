@@ -22,9 +22,9 @@ public class WeatherService {
     @Value("${weatherbit.api.key}")
     private String apiKey;
 
-    public ApiResponseSetting<Double> getTemperature(Long travelId) {
+    public ApiResponseSetting<Double> getTemperature(Long destId) {
         // DB에서 여행 정보 가져오기
-        TravelList travel = travelListRepository.findById(travelId)
+        TravelList travel = travelListRepository.findById(destId)
                 .orElseThrow(() -> new IllegalArgumentException("여행지를 찾을 수 없습니다."));
 
         String city = travel.getCity(); // 한->영 번역 필요한 경우 있을 수도 (ex.이스탄불)
