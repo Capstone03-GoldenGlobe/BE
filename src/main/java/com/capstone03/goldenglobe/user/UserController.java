@@ -37,6 +37,9 @@ public class UserController {
     if (userService.findByCellphone(user.getCellphone()).isPresent()) {
       return new ResponseEntity<>("이미 가입된 전화번호입니다.", HttpStatus.CONFLICT);
     }
+    if (userService.isNicknameTaken(user.getNickname())) {
+      return new ResponseEntity<>("이미 사용 중인 닉네임입니다.", HttpStatus.CONFLICT);
+    }
     user.setPassword(passwordEncoder.encode(user.getPassword()));
 
     // 기본 권한 추가
@@ -49,6 +52,7 @@ public class UserController {
 
     return new ResponseEntity<>("성공적으로 회원가입되었습니다.", HttpStatus.CREATED);
   }
+
 
   // 로그인
   @PostMapping("/auth/signin")
@@ -123,25 +127,34 @@ public class UserController {
 
   // 사용자 정보 수정
   @PutMapping("/myPage/modifyProfile")
-  public ResponseEntity<String> updateUserInfo(@RequestBody User updatedUser,Authentication auth) {
+  public ResponseEntity<String> updateUserInfo(@RequestBody User updatedUser, Authentication auth) {
     CustomUser customUser = (CustomUser) auth.getPrincipal();
     Long authUserId = customUser.getId();
     Optional<User> userOptional = userService.findById(authUserId);
 
     if (userOptional.isPresent()) {
       User user = userOptional.get();
-      // 필요한 필드 업데이트 (비밀번호 암호화도 가능)
+
+      // 닉네임 중복 확인 로직 추가
+      if (!user.getNickname().equals(updatedUser.getNickname()) &&
+          userService.isNicknameTaken(updatedUser.getNickname())) {
+        return new ResponseEntity<>("이미 사용 중인 닉네임입니다.", HttpStatus.CONFLICT);
+      }
+
+      // 필요한 필드 업데이트
       user.setName(updatedUser.getName());
       user.setNickname(updatedUser.getNickname());
       user.setCellphone(updatedUser.getCellphone());
       user.setProfile(updatedUser.getProfile());
       user.setGender(updatedUser.getGender());
+
       userService.saveUser(user);
       return new ResponseEntity<>("사용자 정보가 성공적으로 수정되었습니다.", HttpStatus.OK);
     } else {
       return new ResponseEntity<>("사용자가 존재하지 않습니다", HttpStatus.NOT_FOUND);
     }
   }
+
 
   // 회원 탈퇴
   @DeleteMapping("/users")

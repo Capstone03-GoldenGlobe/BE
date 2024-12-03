@@ -30,6 +30,9 @@ public class UserService {
 
   // 사용자 저장
   public User saveUser(User user) {
+    if (isNicknameTaken(user.getNickname())) {
+      throw new IllegalArgumentException("이미 사용 중인 닉네임입니다."); // 닉네임 중복 예외 처리
+    }
     return userRepository.save(user);
   }
 
@@ -78,5 +81,9 @@ public class UserService {
       refreshTokenRepository.save(refreshToKen);
     }
   }
-}
 
+  // 닉네임 중복 확인
+  public boolean isNicknameTaken(String nickname) {
+    return userRepository.findByNickname(nickname).isPresent();
+  }
+}
