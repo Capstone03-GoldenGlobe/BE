@@ -1,11 +1,9 @@
 package com.capstone03.goldenglobe.user;
 
 import com.capstone03.goldenglobe.user.blackList.BlackListService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -29,6 +28,7 @@ public class UserController {
   private final JwtUtil jwtUtil;
 
   // 회원 가입
+  @Transactional
   @PostMapping("/auth/signup")
   public ResponseEntity<String> registerUser(@RequestBody User user) {
     if (user.getCellphone() == null || user.getPassword() == null) {
