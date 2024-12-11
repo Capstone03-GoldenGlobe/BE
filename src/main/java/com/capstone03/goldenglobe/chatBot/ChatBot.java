@@ -5,11 +5,15 @@ import com.capstone03.goldenglobe.listGroup.ListGroup;
 import com.capstone03.goldenglobe.travelList.TravelList;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
-@Data
+@Table
+@Getter
+@Setter
 public class ChatBot {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
