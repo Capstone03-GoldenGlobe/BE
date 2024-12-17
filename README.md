@@ -1,20 +1,26 @@
 # GoldenGlobe
 
-## 프로젝트 개요
+## 🌏 프로젝트 개요
 이 프로젝트는 시니어와 그 가족들이 효율적으로 여행을 준비할 수 있도록 돕는 LLM과 RAG 기반의 맞춤형 여행 챗봇 및 체크리스트 서비스입니다. 
 시니어가 여행지 정보를 쉽게 파악하고 준비할 수 있도록 돕는 챗봇 기능과, 여행지에 맞춘 공유 체크리스트 기능을 통해 여행 준비의 효율성을 높입니다.
 
 ### 주요 기능
 1. 챗봇
+    - 유저가 여행 pdf를 입력합니다.
+    - 유저를 통해 챗봇 질문을 입력받고 챗봇 api를 통해 답변을 보여줍니다.
 2. 체크리스트
+    - pdf기반 준비물을 보여줍니다.
+    - 준비물 그룹과 아이템을 적고 체크합니다.
+    - 메모를 통해 가족과 간단히 소통할 수 있습니다.
+    - 가족과 체크리스트를 공유할 수 있습니다.
 
-### 사용 기술
+## 🛠️ 사용 기술
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat-square&logo=springboot&logoColor=white) ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=postman&logoColor=white) ![JPA](https://img.shields.io/badge/JPA-000000?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxu...%29) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazonaws&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white) ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=white) ![Lombok](https://img.shields.io/badge/Lombok-2C4F72?style=flat-square&logo=lombok&logoColor=white)
 
 
 ---
 
-## 시작하기
+## 💡 시작하기
 ### 사전준비
 - 데이터베이스 준비
   - MySQL
@@ -28,7 +34,9 @@
     
 ### How to Build
 1. Repository 클론
-`git clone https://github.com/Capstone03-GoldenGlobe/BE.git`
+```
+git clone https://github.com/Capstone03-GoldenGlobe/BE.git
+```
 
 2. `src/main/resources` 폴더 아래에 `application.properties` 파일 추가
   ```
@@ -78,15 +86,20 @@ deepl.api.key={deepl api 키}
 ```
 
 3. 빌드
-`./gradlew build`
+```
+./gradlew build
+```
 
 
 ### How to Install
-- 서버 실행 `./gradlew bootRun`
+- 서버 실행
+```
+./gradlew bootRun
+```
 
 ### How to Test
 - 서버 실행 후, `http://localhost:8080/health`에 접속
-- 'OK'가 좌측 상단에 실행되면 서버 실행 중
+- `OK`가 좌측 상단에 실행되면 서버 실행 중
 
 ### (Option) 배포 자동화
 - `Repository` > `Settings` > `Security - Secretes and variables` > `Actions` > `Repository secrets` > `New repository secret`
@@ -132,3 +145,10 @@ deepl.api.key={deepl api 키}
 <br>
 
 ## 📚 오픈소스
+1. **Spring Boot** : https://spring.io/
+2. **Lombok** : https://projectlombok.org/
+3. **MySQL** : https://www.mysql.com/
+4. **Redis** : https://redis.io/
+5. **Swagger** : https://swagger.io/
+6. **Docker** : https://www.docker.com/
+7. **GitHub** : https://github.com/
